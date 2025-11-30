@@ -1,0 +1,21 @@
+\section{Sufficient Multi-Objective Reinforcement Learning}
+\label{sec:sufficient_morl}
+
+The \gls{mood} framework addresses multi-objective problems by converting them into scalarized single-objective tasks using weight vectors $\vec{\lambda}$ to prioritize objectives. \gls{morld} adapts this to \gls{rl} by either training multiple policies for different weight configurations or a single policy conditioned on $\vec{\lambda}$. The trade-offs among objectives are captured by the \gls{pf}, which consists of non-dominated solutions—those not outperformed across all objectives~\cite{felten2024multi}.
+
+In this work, we reinterpret \gls{morld}~\cite{felten2024multi} from the perspective of reward shaping.  
+We categorize the reward components into two types: \textit{dominant} and \textit{auxiliary}.  
+The dominant reward corresponds to the agent's ultimate objective—typically sparse and challenging to optimize directly—while auxiliary rewards are denser signals that help guide the agent toward the dominant goal.  
+Importantly, some environments do not define a dominant reward explicitly; in such cases, optimizing auxiliary components can still lead to optimal behavior (e.g., HalfCheetah in~\cite{felten_toolkit_2023}). 
+
+We further propose \textit{sufficient values}: bounds beyond which optimizing an auxiliary component no longer improves the dominant reward. These values mitigate conflicts between objectives by capping unnecessary optimization effort (e.g., excessive ball-carrying at the cost of shooting). We illustrate an example on \fref{fig:sufficient_values}, in which the auxiliary reward reaches a sufficient value which does not impact much the dominant component.
+
+\begin{figure}[ht]
+    \caption{
+        Conceptual illustration of sufficient values for auxiliary rewards. The sufficient value of the auxiliary reward is $30$.
+    }
+    \centering
+    \includegraphics[width=\linewidth]{images/suff_pareto.pdf}
+    \label{fig:sufficient_values}
+    \par\medskip\ABNTEXfontereduzida\selectfont\textbf{Source:} Author
+\end{figure}

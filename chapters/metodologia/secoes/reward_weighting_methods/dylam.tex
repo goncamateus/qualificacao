@@ -1,0 +1,49 @@
+\subsection{Dynamic Reward Weighting Function}
+\label{sec:dylam}
+
+Using the static weighting function, we proved that the Critic becomes a regression model of $Q^*$ for each reward component and trained the Actor with a weighted sum of $Q$-values.
+Using a dynamic weight adjustment method, we do the same for training the estimators, but we change the function that weights the $Q$-values. Now the vector $\lambda$ is a function of the actual performance of the agent in the environment:
+
+\begin{gather}
+\overline{R^i_t} = R^i_t + \tau_\lambda(R^i_{t-1} - R^i_t) \\
+\zeta_i(\overline{R^i_t}) = \frac{R^i_{\text{max}} - \overline{R^i_t}}{R^i_{\text{max}} - R^i_{\text{min}}} \\
+w_i = e^{\zeta_i} - 1 \\
+\lambda_i(\overline{R^i_t}) = \frac{w_i + \epsilon}{\sum_{j=1}^n (w_j + \epsilon)}
+\label{eq:lambda_func_fixed}
+\end{gather}
+
+\noindent
+where $R^i_t$ denotes the accumulated return for the $i$-th reward component at time $t$, and $\overline{R^i_t}$ is its smoothed version using a soft update factor $\tau_\lambda$. The term $\zeta_i(\overline{R^i_t})$ represents the normalized inverse proficiency score, defined using a pair of bounds $R^i_{\text{min}}$ and $R^i_{\text{max}}$ that capture what we call the \textit{sufficient values}. The denominator includes a small constant $\epsilon$ to ensure numerical stability.
+
+
+The main idea of the method is to reduce each weight $\lambda_i$ as the agent learns the associated skill, prioritizing on the harder ones after learning the easier ones. However, this must be done smoothly to prevent instabilities.
+Therefore, we use smooth updates similar to the $\tau$-updates presented in \gls{ddpg} \cite{ddpg}.
+The smooth $\lambda$ updates lead to a low variance of $\sum^N_i \lambda_i Q_i (s,a)$ for the same state-action pairs along with the training. We update our theorem in Theorem \ref{theo:dyl_pg_theo}.
+% the Actor to receive approximated $Q$-values for the same state-action pairs along with the training.
+
+\begin{theorem}[Dynamic $\lambda$ Policy Gradient theorem]
+\label{theo:dyl_pg_theo}
+    \begin{gather}
+    \begin{split}
+    \nabla_\theta J (\pi_\theta) &= \int_S p^\pi(s) \int_A \nabla_\theta \pi_\theta (a|s) Q_\pi (s,a) \ da \ ds\\
+    &= \int_S p^\pi (s) \int_A \nabla_\theta \pi_\theta(s) \sum^N_i{\lambda_i(\overline{R^i_t}) Q^\pi_i (s,a)} \ da \ ds\\
+    &\iff E \ggg 1 \text{ and } |\tau_\lambda(R^i_t - R^i_{t-1})| \approx 0,
+    \end{split}
+    \label{eq:dyl_pg_theo}
+    \end{gather} 
+\noindent
+\text{where $E$ is the number of episodes to take the average sum.}
+\end{theorem}
+
+\begin{proof}
+By the law of large numbers, as \(E \ggg 1\), the empirical average reward \(\overline{R^i_E}\) converges to the expected reward \(\mathbb{E}[R^i]\). Since \(\lambda_i(\cdot)\) is a continuous function, we have $\lambda_i(\overline{R^i_E}) \to \lambda_i(\mathbb{E}[R^i]) \equiv \lambda_i$. Thus, for large \(E\), the time-varying weights \(\lambda_i(\overline{R^i_E})\) can be treated as constants \(\lambda_i\), reducing the dynamic case to Theorem \ref{theo:ext_pg_theo}:
+
+\begin{gather} 
+    \begin{split}
+    \nabla_\theta J (\pi_\theta) &= \int_S p^\pi (s) \int_A \nabla_\theta \pi_\theta(s) \sum^N_i{\lambda_i(\overline{R^i_t}) Q^\pi_i (s,a)} da \ ds\\
+    &= \int_S p^\pi (s) \int_A \nabla_\theta \pi_\theta(s) \sum^N_i{\lambda_i Q^\pi_i (s,a)} \ da \ ds \\
+    &= \int_S p^\pi(s) \int_A \nabla_\theta \pi_\theta (s) Q_\pi (s,a) \ da \ ds\\
+    \end{split}
+    \label{eq:proof_dyl_pg_theo}
+    \end{gather}
+\end{proof}

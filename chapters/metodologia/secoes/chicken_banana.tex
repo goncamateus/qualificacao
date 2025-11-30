@@ -1,0 +1,26 @@
+\section{Analysis of the ``Chicken-Banana'' Problem}
+
+To demonstrate the efficacy of our proposed method, we introduce a novel Grid-World environment termed the ``Chicken-Banana'' problem. The environment layout is illustrated in Figure \ref{fig:chicken_banana_env}. This domain is formulated as a Markov Decision Process (MDP) defined by discrete state and action spaces. The action space $\mathcal{A}$ consists of four discrete movement primitives: $\mathcal{A} = \{\text{Up, Down, Left, Right}\}$. The state space $\mathcal{S}$ is defined by the combination of the agent's spatial position and its current inventory. With 16 accessible grid positions and 4 inventory states (carrying neither object, Banana only, Chicken only, or both), the total state space size is $|\mathcal{S}| = 16 \times 4 = 64$.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=.75\linewidth]{images/chicken-banana.png}
+    \caption{Representation of the ``Chicken-Banana'' Grid-World environment. The agent (blue square) starts at the bottom. The environment contains three reward sources: the Chicken ($C$), the Banana ($B$), and the Gate ($G$). Note that the episode terminates upon reaching the Gate, and the path lengths differ, with $B$ being the closest and $C$ being the furthest.}
+    \label{fig:chicken_banana_env}
+\end{figure}
+
+The reward structure is composed of three distinct components: the Banana ($B$), the Chicken ($C$), and the Gate ($G$). The specific reward values and their bounds $[R_{\min}, R_{\max}]$ are defined as follows:
+\begin{itemize}
+    \item \textbf{Banana:} Yields a reward of $+30$ [$R_{min}=0$, $R_{\max}=30$].
+    \item \textbf{Chicken:} Yields a reward of $+70$ [$R_{min}=0$, $R_{\max}=70$].
+    \item \textbf{Gate:} Yields a reward of $+100$ [$R_{min}=0$, $R_{\max}=100$].
+\end{itemize}
+While reaching the Chicken or Banana provides a scalar reward and updates the agent's state (inventory), reaching the Gate yields the reward and triggers immediate \textbf{episode termination}.
+
+Notably, the objects are arranged by increasing distance from the starting position in the following order: Banana, Gate, and Chicken. This configuration is designed to demonstrate that a standard Q-Learning agent may fail to discover the Chicken ($+70$) if exploration strategies do not explicitly encourage visiting more distant states before the episode terminates at the Gate. This highlights the issue of premature termination, where an agent may finish the episode without collecting all available rewards.
+
+From an exploration perspective, the Banana represents the most accessible component, followed by the Gate, and finally the Chicken. However, within the \gls{dylam} framework, we eschew terms such as ``easiest'' or ``hardest.'' Instead, we characterize a component as sub-optimal or unoptimized relative to its specific maximum reward vector, $\vec{R}_{\max}$. If stochastic exploration allows the agent to reach the most distant component, \gls{dylam} adapts to optimize the previously neglected components. In the following section, we provide an analysis of how \gls{dylam} modulates the agent's behavior to satisfy the distinct requirements of each reward component.
+
+\subsection{Components development}
+
+As explained before, this environment was developed with the purpose to highlight the prioritization of each component through training time. It is important to remember that the agents developed may not have the same learning 

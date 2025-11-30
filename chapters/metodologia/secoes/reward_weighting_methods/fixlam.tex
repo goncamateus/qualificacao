@@ -1,0 +1,207 @@
+\subsection{Static Reward Weighting Function}
+\label{sec:fixlam}
+
+The static reward weighting function, denoted as \gls{statlam}, serves as a fundamental step toward our dynamic formulation, DyLam. This method extends the classical Reinforcement Learning framework by shifting the responsibility of combining reward components from the environment to the agent. We begin by revisiting the decomposition proposed in~\cite{russell2003q}, introducing a more realistic variant of the $Q$-learning update. We then present the core idea of decoupling reward weights from reward components and subsequently extend the formulation to Policy Gradient methods.
+
+\subsubsection{Preliminaries}
+
+Let $(S,A,P,R,\gamma)$ denote a Markov Decision Process (MDP) with state space $S$, action space $A$, transition function $P(s' \mid s,a)$, and the global reward function
+\begin{equation}
+    R(s,a,s') = \sum_{i=1}^{n} r_i(s,a,s'),
+\end{equation}
+composed of $n$ reward components. Each component induces its own action-value function
+\begin{equation}
+    Q_i^\pi(s,a) = \mathbb{E}_\pi \Bigg[\sum_{t=0}^{\infty} \gamma^t r_i(s_t,a_t,s_{t+1}) \,\Big|\, s_0=s,\, a_0=a \Bigg].
+\end{equation}
+
+We recall the global action-value function:
+\begin{equation}
+    Q^\pi_G(s,a) = \sum_{i=1}^{n} Q_i^\pi(s,a).
+    \label{eq:QG_def}
+\end{equation}
+
+\subsubsection{Assumptions}
+
+Throughout this section, we assume:
+\begin{enumerate}[label=(A\arabic*)]
+    \item Every state–action pair $(s,a)$ is visited infinitely often.
+    \item Reward components are uniformly bounded:
+    \[
+        |r_i(s,a,s')| \le R_{\max} < \infty.
+    \]
+    \item Transition dynamics satisfy the Markov property under policy $\pi$.
+\end{enumerate}
+
+These assumptions follow the standard requirements for Q-learning convergence~\cite{watkins1989learning}.
+
+\subsubsection{Local Decomposition and Illusion of Control}
+
+Following~\cite{russell2003q}, the component-wise $Q$-updates satisfy:
+\begin{gather}
+    \begin{split}
+        Q_i^\pi(s_t, a_t)
+        &= (1-\alpha_i) Q_i^\pi(s_t, a_t)
+        + \alpha_i \big[
+            r_i(s_t, a_t, s_{t+1})
+            + \gamma \max_{a_{t+1} \in A} Q_i^\pi(s_{t+1}, a_{t+1})
+        \big],
+    \end{split}
+    \label{eq:zimdars_original}
+\end{gather}
+
+As discussed in Chapter~\ref{sec:drq}, this induces an \emph{illusion of control}: each component behaves as an independent sub-agent optimizing only its own reward. While consistent with the multi-agent interpretation of~\cite{russell2003q}, it is incompatible with the single-agent perspective of this work.
+
+\subsubsection{Realistic Control for Q-Learning}
+\label{sec:realistic_control_q}
+To reconcile the decomposition with a single-agent formulation, we interpret all $Q_i$ as components of a unified decision process. We therefore introduce the following definition.
+
+\begin{definition}[Realistic Global Policy]
+    The realistic global greedy policy is defined as
+    \begin{equation}
+        \pi_G(s) = \arg\max_{a \in A} Q_G(s,a) 
+        = \arg\max_{a \in A} \sum_{i=1}^{n} Q_i(s,a).
+        \label{eq:realistic_pi}
+    \end{equation}
+\end{definition}
+
+The resulting component-wise update is:
+
+\begin{gather}
+    Q_i(s_t, a_t)
+    = (1-\alpha_i) Q_i(s_t, a_t)
+    + \alpha_i \left[
+        r_i(s_t, a_t, s_{t+1})
+        + \gamma Q_i \big( s_{t+1}, \pi_G(s_{t+1}) \big)
+    \right],
+    \label{eq:realistic_component_update}
+\end{gather}
+
+and the global value function is reconstructed through Eq. \ref{eq:QG_def}.
+
+\subsubsection{Realistic Decomposition and Global Consistency}
+
+We now show that the realistic update recovers the standard Q-learning update for the global value function.
+
+\begin{theorem}[Consistency of Realistic Q-Learning]
+\label{theo:realistic_q_learning}
+Let Assumptions (A1)--(A3) hold. Under the update rule in
+Eq.~\ref{eq:realistic_component_update}, the global value function 
+$Q_G(s,a) = \sum_i Q_i(s,a)$ satisfies:
+\begin{equation}
+    Q_G(s,a)
+    = \mathbb{E}_{s' \sim P(\cdot \mid s,a)}
+    \left[
+        R(s,a,s') + \gamma \max_{a' \in A} Q_G(s',a')
+    \right],
+    \label{eq:QG_bellman}
+\end{equation}
+which is precisely the Bellman optimality equation for standard Q-learning.
+\end{theorem}
+
+\begin{proof}
+Summing Eq.~\ref{eq:realistic_component_update} over all components yields:
+\begin{align}
+    Q_G(s_t,a_t)
+    &= \sum_i Q_i(s_t,a_t) \\
+    &= (1-\alpha) \sum_i Q_i(s_t,a_t)
+    + \alpha \sum_i \left[
+        r_i(s_t,a_t,s_{t+1})
+        + \gamma Q_i(s_{t+1}, \pi_G(s_{t+1}))
+    \right] \\
+    &= (1-\alpha) Q_G(s_t,a_t)
+    + \alpha \left[
+        R(s_t,a_t,s_{t+1})
+        + \gamma Q_G(s_{t+1}, \pi_G(s_{t+1}))
+    \right],
+\end{align}
+which is the standard Q-learning update.
+\end{proof}
+
+\begin{corollary}[Convergence of Realistic Q-Learning]
+Under Assumptions (A1)--(A3), the update rule in Eq.~\ref{eq:realistic_component_update}
+converges to the optimal global action-value function $Q_G^\ast$, and the corresponding
+policy $\pi_G$ converges to an optimal policy for the MDP.
+\end{corollary}
+
+\begin{proof}
+Since Theorem~\ref{theo:realistic_q_learning} shows that $Q_G$ satisfies the Bellman optimality operator for standard Q-learning, convergence follows directly from~\cite{watkins1989learning}.
+\end{proof}
+
+
+\subsubsection{Static Lambda Weights for Reward Signals}
+\label{sec:statlam}
+
+We now introduce a second foundational element of our framework: the decoupling of the reward weights from the reward components. Let the multi-reward structure of the environment decompose into $n$ unweighted components $\bar{r}_i : S \times A \times S \rightarrow \mathbb{R}$. We define a static weight vector
+\[
+    \vec{\lambda} = (\lambda_1, \lambda_2, \ldots, \lambda_n) \in \Delta^{n-1},
+\]
+where $\Delta^{n-1}$ is the probability simplex, ensuring
+\[
+    \lambda_i \ge 0,
+    \qquad
+    \sum_{i=1}^{n} \lambda_i = 1.
+\]
+Each reward component $r_i(s,a,s')$ is therefore given by $\bar{r}_i(s,a,s')$, and all reward composition is handled internally by the agent rather than imposed externally by the environment.
+
+As shown in the previous section, the agent learns $n$ component-wise value functions $Q_i(s,a)$, which collectively induce a global action-value through a weighted aggregation. However, because the aggregation weights $\lambda_i$ are introduced only at the policy level, no explicit global $Q$-table is maintained. Instead, the agent selects actions according to the $\lambda$-weighted global policy:
+\begin{equation}
+    \pi_G(s)
+    = \arg\max_{a \in A} \sum_{i=1}^{n} \lambda_i\, Q_i(s,a).
+    \label{eq:statlam_policy}
+\end{equation}
+
+Each component $Q_i$ evolves independently following the realistic update rule established earlier, now using the unweighted reward signal:
+\begin{equation}
+    Q_i(s_t,a_t)
+    \leftarrow
+    (1 - \alpha)\, Q_i(s_t,a_t)
+    + \alpha \big[
+        \bar{r}_i(s_t,a_t,s_{t+1})
+        + \gamma\, Q_i(s_{t+1}, \pi_G(s_{t+1}))
+    \big].
+    \label{eq:realistic_statlam}
+\end{equation}
+
+Although the weights appear solely in the policy (Eq.~\ref{eq:statlam_policy}), this does not introduce additional complexity in the update rule. Because $\vec{\lambda}$ is fixed, the resulting induced policy $\pi_G(s, a)$ is stationary. Consequently, Eq.~\ref{eq:realistic_statlam} is simply an instance of the realistic component update (Eq.~\ref{eq:realistic_component_update}), applied to a fixed linear scalarization of the $Q$-values.
+
+From this perspective, the static weighting scheme remains fully consistent with the theoretical underpinnings presented in~\cite{russell2003q} and in Section~\ref{sec:realistic_control_q}, while introducing a crucial conceptual shift: the reward composition---traditionally embedded within the environment---is now explicitly managed by the agent. This shift lays the groundwork for the dynamic weighting mechanism developed in the next section, where $\vec{\lambda}$ becomes adaptive and evolves during learning.
+
+\subsubsection{Policy Gradient methods}
+The proposed critic uses the regular training scheme of the PG methods but for multiple outputs. We want to show that we can state the Policy Gradient Theorem even when weighting the $Q$-values of the actor's gradient $\nabla_\theta J(\pi_\theta)$ instead of weighting the reward components in the environment and combining them into a single value, as usually done.
+
+\begin{theorem}[Extended Policy Gradient Theorem]
+\label{theo:ext_pg_theo}
+Let \( Q_\pi(s,a) = \sum_{i=1}^N \lambda_i Q^\pi_i(s,a) \) be a linear decomposition of the action-value function. Then:
+\begin{align}
+\nabla_\theta J (\pi_\theta) &= \int_S p^\pi(s) \int_A \nabla_\theta \pi_\theta (a|s) Q_\pi (s,a) \, da \, ds \nonumber \\
+&= \int_S p^\pi (s) \int_A \nabla_\theta \pi_\theta (a|s) \sum_{i=1}^N \lambda_i Q^\pi_i (s,a) \, da \, ds.
+\label{eq:ext_pg_theo}
+\end{align} 
+\end{theorem}
+
+\begin{proof}
+\label{proof:ext_pg}
+Using the first form of Equation \ref{eq:pg_theorem}, we substitute the term of the value function by a weighted sum of $Q$-values, $\sum^N_i{\lambda_i Q^\pi_i (s,a)}$, where $\lambda_i \text{ and } Q^\pi_i$ are, respectively, the weight and $Q$-value for the $i$-th reward component, and reach the Theorem \ref{theo:pg_theorem}.
+
+\begin{equation}
+    \nabla_\theta J(\pi_\theta) = \int_S p^\pi (s) \int_A \nabla_\theta \pi_\theta (a|s) \sum^N_i{\lambda_i Q^\pi_i (s,a)} \ da \ ds.
+\end{equation}
+
+Assuming a constant $\lambda$ vector and substituting each $\lambda_i Q^\pi_i (s,a)$ by $Q'^\pi_i (s,a)$ we obtain:
+
+\begin{equation}
+    \nabla_\theta J(\pi_\theta) = \int_S p^\pi (s) \int_A \nabla_\theta \pi_\theta (a|s) \sum^N_i{Q'^\pi_i (s,a)} \ da \ ds.
+\end{equation}
+
+As described by \cite{russell2003q}, we can decompose a value function $Q(s,a)$ into $N$ components $Q_i(s,a)$, where $Q(s,a) = \sum^N_i Q_i(s,a)$. Therefore, we can rewrite $\nabla_\theta J$ as:
+
+\begin{gather}
+    \begin{split}
+        \nabla_\theta J(\pi_\theta) &= \int_S p^\pi (s) \int_A \nabla_\theta \pi_\theta (a|s) Q'^\pi (s,a) \ da \ ds, \\
+        &= \E_{S\sim p^\pi,a\sim \pi_\theta}\left[\nabla_\theta log\pi_\theta (a|s)Q'^\pi (s,a)\right] \\
+        \label{eq:lambda_actor_update}
+    \end{split}
+\end{gather}
+\noindent
+which is the Policy Gradient theorem.
+\end{proof}

@@ -1,0 +1,25 @@
+\subsection{Model Designs in Multi-Objective Reinforcement Learning}
+\label{sec:morl_model}
+
+Designing models based on \gls{morl} involves choices that significantly impact the learning dynamics, sample efficiency, and policy diversity. One of the central aspects is the \textit{architectural strategy} used to represent and learn multiple objectives.
+
+The choice of model architecture in \gls{morl} also plays a central role in balancing efficiency and flexibility. The literature generally classifies architectures into three main categories:
+
+\subsubsection{Independent Models}
+The simplest approach to learning in multi-objective settings is to use $d$ independent value function estimators, one for each objective. This design does not share any parameters between objectives, potentially leading to redundant computation and poor generalization, especially when objectives are correlated. Despite these limitations, it allows complete learning flexibility per objective.
+
+This strategy was adopted by \cite{mossalam2016multiobjectivedeepreinforcementlearning}, where each Q-network was trained independently to maximize its corresponding scalar reward signal.
+
+\subsubsection{Shared Layers}
+A more parameter-efficient strategy is to share early layers (e.g., state representations) across objectives, while allowing later layers to branch into separate outputs—one per objective. This design improves generalization and learning speed, especially when objectives are partially aligned.
+
+Approaches by \cite{chen2020combining} and \cite{abels2019dynamicweightsmultiobjectivedeep} demonstrated that shared representations can accelerate convergence and facilitate dynamic weight adaptation, while maintaining objective-specific outputs. In our work, we adopt this shared-layers strategy to model our vector-valued value functions, leveraging a common backbone while preserving independent heads per objective.
+
+\subsubsection{Conditioned Models}
+A more flexible and general approach involves conditioning the model on an explicit preference vector or scalarization weight $\vec{w}$. Here, the model is trained to predict or act based on both the state and a given preference, allowing a single network to adapt to various trade-offs.
+
+This method enables approximation of the entire Pareto front in a single run, as shown by \cite{castelletti2013multi} in the context of water resource management, and more recently by \cite{alegre2023sample} using policy improvement prioritization. While powerful, such models often require more complex training procedures and diverse preference sampling strategies to avoid overfitting or mode collapse.
+
+\vspace{1em}
+\noindent
+In summary, the design of \gls{morl} models entails trade-offs between representation efficiency, flexibility, and training complexity. This work adopts the shared-layers convention, balancing architectural simplicity with the benefits of joint state encoding across objectives.

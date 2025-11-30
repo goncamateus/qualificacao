@@ -1,0 +1,44 @@
+\subsection{Backpropagation and Gradient Descent}
+\label{sec:backpropagation}
+
+Training a neural network involves adjusting its parameters—namely the weights and biases—to minimize a loss function that quantifies the error between the model's predictions and the expected outputs. One of the most widely used optimization strategies for this purpose is \emph{gradient descent} \cite{ruder2016overview}.
+
+Gradient descent is an iterative algorithm that updates the parameters in the direction of the negative gradient of the loss function with respect to those parameters. Given a parameter vector $\boldsymbol{\theta}$ and a learning rate $\alpha > 0$, the update rule at iteration $t$ is defined as:
+
+\begin{equation}
+\boldsymbol{\theta}^{(t+1)} = \boldsymbol{\theta}^{(t)} - \alpha \nabla_{\boldsymbol{\theta}} \mathcal{L}(\boldsymbol{\theta}^{(t)}),
+\end{equation}
+
+where $\mathcal{L}$ is the loss function and $\nabla_{\boldsymbol{\theta}} \mathcal{L}$ denotes its gradient with respect to the parameters.
+
+Several variants of gradient descent exist, including \gls{sgd}, mini-batch gradient descent, and adaptive methods such as Adam and RMSProp \cite{kingma2014adam}. Although more advanced optimizers are often used in practice, this work focuses on the core gradient-based optimization approach for clarity and educational purposes.
+
+To apply gradient descent in the context of deep neural networks, it is necessary to compute the gradient of the loss function with respect to each individual weight and bias in the network. This is accomplished through the \textit{backpropagation} algorithm, introduced by \citeonline{rumelhart1986learning}.
+
+Backpropagation efficiently computes the required gradients using the chain rule of calculus, propagating the error from the output layer backward through the network. This enables updating each parameter based on its contribution to the total error.
+
+The training process typically follows two steps:
+\begin{itemize}
+  \item \textbf{Forward pass:} The input is propagated through the network to compute predictions and the corresponding loss.
+  \item \textbf{Backward pass:} The gradients of the loss with respect to the network's parameters are computed layer by layer, from the output layer back to the input layer.
+\end{itemize}
+
+Algorithm~\ref{alg:backprop} outlines the general training procedure for a neural network using gradient descent and backpropagation.
+
+\begin{algorithm}[H]
+\caption{Neural Network Training with Backpropagation}
+\label{alg:backprop}
+\begin{algorithmic}[1]
+\Require Training data $(\mathbf{x}, \mathbf{y})$, learning rate $\alpha$, number of epochs $T$
+\State Initialize weights $\mathbf{W}$ and biases $\mathbf{b}$ randomly
+\For{epoch $= 1$ to $T$}
+    \For{each mini-batch $(\mathbf{x}_i, \mathbf{y}_i)$}
+        \State \textbf{Forward pass:} compute predictions $\hat{\mathbf{y}}_i$
+        \State Compute loss $\mathcal{L}(\hat{\mathbf{y}}_i, \mathbf{y}_i)$
+        \State \textbf{Backward pass:} compute gradients $\nabla_{\mathbf{W}, \mathbf{b}} \mathcal{L}$
+        \State Update weights: $\mathbf{W} \leftarrow \mathbf{W} - \alpha \nabla_{\mathbf{W}} \mathcal{L}$
+        \State Update biases: $\mathbf{b} \leftarrow \mathbf{b} - \alpha \nabla_{\mathbf{b}} \mathcal{L}$
+    \EndFor
+\EndFor
+\end{algorithmic}
+\end{algorithm}

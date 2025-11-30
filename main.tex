@@ -57,8 +57,8 @@
 	french,				% idioma adicional para hifenização
 	spanish,			% idioma adicional para hifenização
 %	brazil,				% o último idioma é o principal do documento
-	english,
 	brazil,
+	english,
 	]{abntex2/abntex2}
 	\renewcommand{\baselinestretch}{1.5} %para customizar o espaço entre as linhas do texto
 % --
@@ -93,6 +93,9 @@
 \usepackage[versalete,alf,abnt-and-type=e,abnt-etal-list=0,abnt-etal-cite=3]{abntex2/abntex2cite} 
 \usepackage{multirow}
 \usepackage[section]{placeins}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{listings}
 
 
 
@@ -109,7 +112,7 @@
 \newcolumntype{R}[1]{>{\raggedleft\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
 
 \newglossarystyle{modsuper}{%
-  \glossarystyle{super}%
+  \setglossarystyle{super}%
   \renewcommand{\glsgroupskip}{}
   
   % put the glossary in a longtable environment:
@@ -132,6 +135,9 @@
 \usepackage{tikz}
 \usepackage[section]{placeins}
 \usepackage{setspace} 
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{amsthm}
 
 
 
@@ -153,6 +159,14 @@
 \definecolor{javadocblue}{rgb}{0.25,0.35,0.75} % javadoc
 \definecolor{meucinza}{rgb}{0.5, 0.5, 0.5}
 %\definecolor{lightgray}{gray}{0.9}
+\DeclareMathOperator{\E}{\mathbb{E}}
+\DeclareMathOperator{\R}{\mathbb{R}}
+\newcommand{\theoref}[1]{Theorem \ref{#1}}
+\newcommand{\algoref}[1]{Algorithm \ref{#1}}
+\newtheorem{theorem}{Theorem}
+\newtheorem{remark}{Remark}
+\newtheorem{definition}{Definition}
+\newtheorem{corollary}{Corollary}
 
 
 % ----------------------------------------------------------
@@ -200,12 +214,12 @@
 
 \imprimircapa
 \imprimirfolhaderosto*~
-\input{others/ficha}
+% \input{others/ficha}
 %\input{others/ata_defesa}
-\input{others/folha_aprovacao_original}
-\input{others/dedicatoria}
-\input{others/agradecimentos}
-\input{others/epigrafe}
+% \input{others/folha_aprovacao_original}
+% \input{others/dedicatoria}
+% \input{others/agradecimentos}
+% \input{others/epigrafe}
 \input{others/resumo}
 
 
@@ -221,7 +235,7 @@
 % LISTA DE CÓDIGOS FONTES
 % ---
 
-\pdfbookmark[0]{\lstlistingname}{lol} % caso não tenha quadros, comente esta linha 
+% \pdfbookmark[0]{\lstlistingname}{lol} % caso não tenha quadros, comente esta linha 
 \counterwithout{lstlisting}{chapter}
 
 
@@ -230,7 +244,7 @@
 \renewcommand{\lstlistingname}{Código Fonte}
 
 % Altera o rótulo a ser usando no elemento pré-textual "Lista de código"
-\renewcommand{\lstlistlistingname}{Lista de códigos}
+\renewcommand{\lstlistlistingname}{List of Source Codes}
 
 % Configura a ``Lista de Códigos'' conforme as regras da ABNT (para abnTeX2)
 \begingroup\makeatletter
@@ -245,7 +259,7 @@
 \let\oldlstlistoflistings\lstlistoflistings
 {
 \let\oldnumberline\numberline
-\newcommand{\algnumberline}[1]{Código Fonte~#1~\enspace--~\enspace}
+\newcommand{\algnumberline}[1]{Source Code~#1~\enspace--~\enspace}
 \renewcommand{\numberline}{\algnumberline}
 
 \begin{KeepFromToc}
@@ -257,8 +271,8 @@
 % ---
 % LISTA DE QUADROS
 % ---
-\pdfbookmark[0]{\listofquadrosname}{loq} % caso não tenha quadros, comente esta linha 
-\listofquadros* % caso não tenha quadros, comente esta linha 
+% \pdfbookmark[0]{\listofquadrosname}{loq} % caso não tenha quadros, comente esta linha 
+% \listofquadros* % caso não tenha quadros, comente esta linha 
 \cleardoublepage
 
 
@@ -271,15 +285,6 @@
 \listoftables*
 \cleardoublepage
 
-
-        
-  
-% ----------------------------------------------------------
-% LISTA E ABREVIATURAS E SIGLAS
-% ----------------------------------------------------------
-% \printglossary[type=\acronymtype,title={\listadesiglasname},nonumberlist]
-% \printglossaries
-% compile uma vez com o comando \printglossaries e depois compile novamente com o comando \printglossaries comentado para as páginas glossário e siglas serem ocultadas.
 
 % ----------------------------------------------------------
 % LISTA E ABREVIATURAS E SIGLAS
@@ -296,10 +301,6 @@
 % ----------------------------------------------------------
 \input{others/list_simbol}
 
-% ----------------------------------------------------------
-%\input{others/list_simbol}
-
-
 
 % ----------------------------------------------------------
 % SUMÁRIO
@@ -314,8 +315,6 @@
 % \setcounter{page}{13}
 \setcounter{tocdepth}{2}
 \setcounter{table}{0}
-
-
 
 
 % ----------------------------------------------------------
@@ -342,17 +341,17 @@
 % \renewcommand{\bibname}{REFER\^ENCIAS}
 %\renewcommand{\bibname}{Bibliography}
 % \addbibresource{sample.bib}
-\bibliography{references2}
+\bibliography{references}
 
 
 % ----------------------------------------------------------
 % Apêndices
 % ----------------------------------------------------------
-\include{appendix}
+% \include{appendix}
 % ----------------------------------------------------------
 % Anexos
 % ----------------------------------------------------------
-\include{anexos}
+% \include{anexos}
 
 \printindex
 

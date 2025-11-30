@@ -1,15 +1,30 @@
-\chapter{Texto Texto Texto}
-\label{chap:intro}
+\section{Contextualization}
+\label{sec:contextualization}
 
+% Historical context
+%   - AI Boom, Growth of LLMs, Foundation models
+% Context for Machine Learning
+%   - Back to the begin: ML basics, 
+% Context of Reinforcement Learning
+%   - Intro to what is Reinforcement Learning focusing on how an agent learns, What is an exeperience, The impact of deep learning on deep q-networks
+% Applications of Reinforcement Learning
+%   - Robotics, Games, Large Language Models
 
- Texto \textit{text} texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto, no \gls{MEC}.
+The field of Artificial Intelligence (AI) has undergone a remarkable evolution over the past few decades, fueled by exponential growth in computational resources, the proliferation of large-scale datasets, and groundbreaking algorithmic innovations~\cite{aiboom1, aiboom2}.
+This period, often referred to as the \textit{AI Boom}, has been defined by the emergence of \textbf{Large Language Models (LLMs)} and \textbf{Foundation Models}—versatile architectures trained on vast and diverse datasets, capable of performing a wide array of tasks with minimal task-specific adaptation~\cite{minaee2025largelanguagemodelssurvey}.
+These models have not only pushed the boundaries of what machines can achieve in domains like natural language understanding, code generation, and problem-solving but have also reshaped the broader landscape of AI research, emphasizing scalability, adaptability, and generalizability~\cite{geminiteam2025geminifamilyhighlycapable, deepseekai2025deepseekr1incentivizingreasoningcapability, openai2024gpt4technicalreport}.
 
- Segundo \citeonline{manualufpe2020}, o \gls{MEC}, texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto .
- 
- \begin{citacao}
- Texto \textit{text} texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto \cite{manualufpe2020}.  
- \end{citacao}
+% FIGURINHA ILUSTRANDO A CRESCENTE DA IA NA VIDA DAS PESSOAS
 
+At the heart of these advancements lies \textbf{Machine Learning (ML)}, the subfield of AI that enables systems to learn from data rather than relying on explicit programming. ML encompasses a spectrum of approaches, from \textbf{supervised learning}, where models are trained on labeled datasets to predict outcomes, to \textbf{unsupervised learning}, which uncovers hidden patterns in unannotated data~\cite{russell2016artificial}.
+Yet, among these paradigms, \textbf{Reinforcement Learning (RL)} stands out as a framework where learning is driven by interaction. In RL, an agent learns to make decisions by engaging with its environment: it observes the current state $s$, selects an action $a$, and receives a reward $r$ that reflects the quality of its choice. Over time, the agent refines its strategy—formalized as a \textbf{policy} $\pi(a|s)$—to maximize cumulative reward, often guided by principles like the Bellman equation \cite{sutton2018reinforcement}.
 
- 
- 
+% \begin{equation}
+%     Q(s, a) = \E\left[r + \gamma \max_{a'} Q(s', a')\right].
+% \end{equation}
+
+The versatility of RL has led to its adoption across a diverse range of applications. In \textbf{robotics}, RL enables machines to learn intricate motor skills, from dexterous manipulation to dynamic locomotion, adapting to real-world variability in ways traditional control systems cannot~\cite{intelligence2025pi, todorov2012mujoco, rsoccer}. In \textbf{games}, RL agents have surpassed human experts in strategically complex environments like Go, Chess, Dota2, and StarCraft II, showcasing their ability to master long-term planning and decision-making under uncertainty~\cite{silver2016mastering, silver2018general, berner2019dota, vinyals2019grandmaster}. More recently, RL has played a pivotal role in refining LLMs through techniques like \textbf{Reinforcement Learning from Human Feedback (RLHF)}, which aligns model outputs with human preferences to produce more coherent, 
+contextually appropriate, and safer responses~\cite{deepseekai2025deepseekr1incentivizingreasoningcapability}. % Figurinha aqui dessas aplicacoes
+These successes, however, come with significant challenges, particularly in the design and implementation of RL environments.
+
+One of the most persistent hurdles in RL is \textbf{environment design}, where the formulation of rewards, state representations, and dynamics can make the difference between success and failure \cite{towers2024gymnasium}. Crafting an effective reward function, for instance, often involves balancing multiple objectives, such as efficiency versus obstacle avoidance in mobile navigation. Poorly designed rewards can lead to unintended behaviors, such as reward hacking, where the agent exploits loopholes to maximize rewards without achieving the intended goal~\cite{sutton2018reinforcement}. Moreover, the \textbf{exploration-exploitation trade-off} becomes critical in sparse-reward settings, where meaningful feedback is rare, necessitating techniques like reward shaping ~\cite{ng1999policy}. These challenges underscore the need for more systematic approaches to RL environment design, from automated reward shaping to adaptive curricula that guide the agent's learning process without excessive human intervention.

@@ -1,0 +1,22 @@
+
+\subsubsection{Actor-Critic}
+\label{sec:actor_critic}
+In this work, we employ an \textbf{Actor-Critic} algorithm, which combines the strengths of \gls{pg} methods and value-based approaches. The \textbf{actor} represents the policy $\pi_\theta(a|s)$, updated using the gradient from Theorem~\ref{theo:pg_theorem}, while the \textbf{critic} estimates the action-value function $Q_\pi(s,a)$ through a parameterized function $Q_w(s,a)$. The critic provides feedback to the actor by evaluating its actions.
+
+Figure~\ref{fig:actor_critic} illustrates the general training loop of an Actor-Critic architecture.
+
+\begin{figure}[ht]
+    \caption{Example of Actor-Critic training loop. The $Q$-values of the critic module are used to train the actor module.}
+    \centering
+    \includegraphics[width=0.75\textwidth]{images/fundamentacao/rl/actor_critic.png}
+    \par\medskip\ABNTEXfontereduzida\selectfont\textbf{Source:} Author
+    \label{fig:actor_critic}
+\end{figure} 
+
+The key distinction between Actor-Critic and standard \gls{pg} methods lies in the use of bootstrapping. Rather than relying on the true value $Q_\pi(s,a)$—which is often unknown—the critic substitutes it with a learned approximation $Q_w(s,a)$. This approximation introduces bias and its effectiveness depends on the quality of the function approximator.
+
+However, under specific conditions, this bias can be eliminated. If the approximator satisfies $Q_w(s,a) = \nabla_\theta \log \pi_\theta(a|s)^T w$ and the parameters $w$ minimize the mean squared error:
+\[
+\epsilon^2(w) = \E_{s \sim p, a \sim \pi_\theta}\left[(Q_w(s,a) - Q_\pi(s,a))^2\right],
+\]
+then the update remains unbiased \cite{sutton2018reinforcement}.

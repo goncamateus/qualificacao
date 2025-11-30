@@ -1,0 +1,22 @@
+\subsection{Multi-Objective setups}
+\label{sec:mo_setups}
+
+A common view in reinforcement learning, shared by foundational researchers such as Sutton, Precup, and Silver, is that all reward signals can ultimately be represented as a single scalar value to be maximized~\cite{silver2021reward}. From this perspective, a multi-objective formulation is, strictly speaking, unnecessary. Indeed, scalarization allows any complex preference structure to be embedded into a standard RL framework, enabling the use of conventional algorithms without modification.
+
+However, in practice, explicitly modeling multiple objectives can provide significant advantages. As argued by \citeonline{roijers2013survey} and \citeonline{hayes2022practical}, \gls{morl} can make the learning process more tractable and interpretable in a number of relevant scenarios. These include:
+
+\begin{itemize}
+    \item \textbf{Unknown Utility Function:} When the preference weights between objectives are not known during training, scalarization is not directly applicable. \gls{morl} enables learning a diverse set of policies, deferring the specification of preferences to a later stage.
+
+    \item \textbf{Decision Support:} In domains where trade-offs between objectives are critical—such as balancing performance and energy consumption—\gls{morl} helps surface these trade-offs to stakeholders by providing a set of Pareto-optimal policies.
+
+    \item \textbf{Interactive Decision Support:} In situations where human preferences are hard to articulate in advance or may evolve through interaction, \gls{morl} offers a framework for incremental refinement and human-in-the-loop exploration of trade-offs.
+
+    \item \textbf{Dynamic Utility Function:} When the relative importance of objectives changes over time—due to system updates, user feedback, or environmental shifts—a single scalar reward is insufficiently flexible. A multi-objective setup supports adaptability.
+
+    \item \textbf{Review and Adjust:} After a policy has been deployed, decision-makers may wish to revisit previous choices in light of new goals or insights. A solution set produced by \gls{morl} offers flexibility to quickly re-align behavior with updated objectives.
+\end{itemize}
+
+In this work, we address environments in which the reward component weights are not \textit{a priori} obvious. Although the benchmark formulation remains functional, on Chapter \ref{chap:results} we demonstrate that adapting these weights through feedback leads to more sample-efficient learning, indicating that the original scalarization was suboptimal. 
+
+Importantly, our method is not inherently multi-objective. Instead, it draws conceptual inspiration from \gls{morl}—particularly from the \textit{Unknown Utility Function} and \textit{Dynamic Utility Function} setups discussed by \cite{roijers2013survey} and \cite{hayes2022practical}—to construct an adaptive mechanism within a single-objective framework.

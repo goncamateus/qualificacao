@@ -1,0 +1,10 @@
+\section{Neural Networks}
+\label{sec:neural-networks}
+
+\gls{nn} are computational models inspired by the structure and function of the human brain, originally proposed as simplified models of biological neurons \cite{mcculloch1943logical}. Since their formalization with the perceptron model \cite{rosenblatt1958perceptron}, \gls{nn} have evolved into powerful function approximators capable of representing complex, high-dimensional, and non-linear relationships \cite{hornik1989multilayer}. This universal approximation capability, combined with advances in optimization and hardware acceleration, has led to the widespread adoption of neural networks across machine learning applications, including vision, language, and control tasks.
+
+In \gls{rl}, neural networks have become a key component in modern algorithms. They are typically used to approximate value functions, policies, or environment dynamics, enabling agents to handle large or continuous state and action spaces where tabular methods are infeasible \cite{mnih2015human, ddpg}. This integration marks the emergence of Deep Reinforcement Learning, where the representational capacity of deep networks is leveraged to learn directly from raw sensory data or high-dimensional observations.
+
+This section introduces the fundamental concepts behind neural networks that are relevant for understanding their role in RL algorithms. We begin with the basic building blocks—perceptrons, feedforward networks and activation functions and progressively explore training mechanisms.
+\input{chapters/fundamentacao/secoes/nn/perceptron}
+\input{chapters/fundamentacao/secoes/nn/backpropagation}

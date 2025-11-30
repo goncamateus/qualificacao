@@ -1,0 +1,14 @@
+\section{Reinforcement Learning}
+\label{sec:rl}
+Reinforcement learning is the problem of learning how to map situations to actions in order to maximize a numerical reward signal. The learner, often called an \textbf{agent}, must discover which actions yield the highest reward through a process of trial and error. Importantly, these actions do not only influence the immediate reward, but also affect future situations and subsequent rewards~\cite{sutton2018reinforcement}.
+
+This section introduces the fundaments of reinforcement learning, first with the \emph{Markov Decision Process} (MDP), which provides the mathematical foundation for modeling decision-making under uncertainty. Then, we examine two major families of learning algorithms: \emph{value-based methods}, which rely on estimating value functions to derive optimal policies, and \emph{policy gradient methods}, which directly optimize the policy through gradient-based approaches. Together, these subsections provide the theoretical and algorithmic basis necessary to understand and develop reinforcement learning solutions.
+
+\input{chapters/fundamentacao/secoes/reinforcement/mdp}
+\input{chapters/fundamentacao/secoes/reinforcement/bellman}
+\input{chapters/fundamentacao/secoes/reinforcement/monte_carlo}
+\input{chapters/fundamentacao/secoes/reinforcement/td_learning}
+\input{chapters/fundamentacao/secoes/reinforcement/value_based}
+\input{chapters/fundamentacao/secoes/reinforcement/policy_gradient}
+\input{chapters/fundamentacao/secoes/reinforcement/gym}
+

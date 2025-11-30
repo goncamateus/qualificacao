@@ -1,0 +1,43 @@
+\subsection{Temporal Difference Learning}
+\label{sec:td_learning}
+
+In \gls{rl}, \gls{td} learning refers to a class of methods that estimate value functions by \emph{bootstrapping}. Instead of waiting for the final outcome of an episode, as in Monte Carlo methods, TD methods update value estimates based on other learned estimates—specifically, using the observed reward and the estimated value of the next state.
+
+At each time step, the learning update relies on the difference between the current value estimate and a one-step ``\textit{lookahead}'' estimate of the future return. This difference is known as the \textbf{TD error}, defined as:
+\begin{equation}
+    \label{eq:td_error}
+    \delta_t = r_{t+1} + \gamma V(s_{t+1}) - V(s_t),
+\end{equation}
+
+\noindent where $t$ is the time step, $r_{t+1}$ is the reward received after taking an action at step $t$, $\gamma$ is the discount factor, and $V(s)$ denotes the estimated value function.
+
+The simplest TD method, called \textbf{$TD(0)$} or \emph{one-step TD}, performs the following update immediately after the transition to state $S_{t+1}$ and receiving reward $R_{t+1}$:
+\begin{equation}
+    \label{eq:td_update}
+    V(S_t) \gets V(S_t) + \alpha \left[ R_{t+1} + \gamma V(S_{t+1}) - V(S_t) \right],
+\end{equation}
+
+\noindent where $\alpha$ is the learning rate. This method is called $TD(0)$ because it bootstraps using only the next state’s value estimate.
+
+We summarize the $TD(0)$ procedure for policy evaluation in Algorithm~\ref{alg:td_0}.
+
+\begin{algorithm}
+\caption{Tabular TD(0) for estimating $v_\pi$}
+\label{alg:td_0}
+\begin{algorithmic}
+\Require Policy $\pi$ to be evaluated
+\Require Step size $\alpha \in (0,1]$
+\State Initialize $V(s)$ for all $s \in \mathcal{S}$ arbitrarily (except $V(\text{terminal}) = 0$)
+\For {each episode}
+    \State Initialize $S$
+    \For {each time step $t$ of the episode}
+        \State $A \gets \text{action sampled from } \pi(S_t)$
+        \State Take action $A$, observe $R_{t+1}, S_{t+1}$
+        \State $V(S_t) \gets V(S_t) + \alpha \left[ R_{t+1} + \gamma V(S_{t+1}) - V(S_t) \right]$
+        \State $S_t \gets S_{t+1}$
+    \EndFor
+\EndFor
+\end{algorithmic}
+\end{algorithm}
+
+Many value-based and policy gradient methods are built upon the TD-learning framework. They extend the TD idea to estimate action-value functions, which are then used to derive policies~\cite{sutton2018reinforcement}. While the specific methods explored in this work are rooted in the TD framework, we note that our final approach is Monte Carlo-based. In Chapter~\ref{chap:method}, we explain how our method requires a large number of episodes ($E \gg 1$) to ensure stable convergence and performance.

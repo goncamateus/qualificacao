@@ -1,0 +1,24 @@
+\subsection{Q-\textit{decomposition}}
+\label{sec:drq}
+
+\cite{russell2003q} represents a foundational contribution to both \gls{morl} and to the present work, as it introduced the \textbf{Q-\textit{decomposition}} method. This approach demonstrated that it is possible to learn Q-value components independently and still converge to policies that are comparable to—or even better than—those learned through standard single-objective methods.
+
+The central idea of Q-\textit{decomposition} is that a collection of ``sub-agents'' can jointly compose an optimal policy under the coordination of an arbiter. The arbiter combines the \textbf{local Q-values} estimated by each sub-agent, and by maximizing their linear combination, the system converges toward a globally optimal policy.
+
+Building on the decomposition of rewards introduced by \cite{ng1999policy}, the method assumes that a global reward can be expressed as the sum of $N$ reward components:
+\begin{equation}
+    r(s_t, a_t, s_{t+1}) = \sum_i r_i(s_t, a_t, s_{t+1}),
+\end{equation}
+where $r_i(s_t, a_t, s_{t+1})$ denotes the $i$-th reward component associated with sub-agent $i$. Consequently, each sub-agent maintains its own Q-function, defined as:
+\begin{equation}
+\label{eq:russel_single_q}
+    Q^\pi_i(s, a) = \E \bigg[ \sum_{t=0}^{T} r_i(s_t, a_t, s_{t+1}) + \gamma Q^\pi_i(s_{t+1}, \pi_i(s_{t+1})) \bigg].
+\end{equation}
+
+Each sub-agent updates its own \textbf{local Q-values} according to its individual reward signal. To act in the environment, the global policy is obtained by linearly combining all sub-agents’ Q-tables and applying a standard policy selection mechanism, such as $\epsilon$-greedy or UCB~\cite{sutton2018reinforcement}. However, when applied with Q-learning, these local updates create an ``illusion of control,'' since each $Q_i$ is updated as if it were the sole agent. Consequently, the linear combination of locally greedy sub-policies does not guarantee that the resulting global Q-function will converge to the same optimum as a monolithic Q-learning agent.
+
+In contrast, when adapting the method to SARSA~\cite{sutton2018reinforcement}, \cite{russell2003q} introduced an arbiter that communicates the selected action $a_{t+1}$ across all sub-agents. This mechanism provides each sub-agent with a consistent view of the global action taken, something not achievable in Q-learning due to its reliance on $\max_a Q_i(s,a)$ during updates.
+
+Extending this line of research, \cite{brys2014multi} leveraged local Q-learning to generalize the framework of \cite{ng1999policy}, proving that local potential-based reward signals can be as powerful as—or superior to—single, globally shaped reward functions. Similarly, \cite{juozapaitis2019explainable} highlighted that decomposed Q-values offer improved interpretability, allowing the agent to explain not only \textit{which} action $a_t$ is chosen in state $s_t$, but also \textit{why}—by identifying which reward component most strongly influenced the decision. 
+
+In essence, Q-\textit{decomposition} establishes a mathematical structure that enables agents to achieve optimal behavior while maintaining transparency over the underlying reward contributions that drive each decision. In this work, we draw inspiration from this decomposition principle not to design multiple interacting sub-agents, but to enable a single agent to dynamically adjust the relative importance of its reward components. Unlike traditional Q-\textit{decomposition}, our approach remains single-objective yet retains its interpretability and adaptability—key characteristics that enhance sample efficiency in environments where reward weights are not obvious.

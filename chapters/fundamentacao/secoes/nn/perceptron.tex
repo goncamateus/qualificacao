@@ -1,0 +1,33 @@
+\subsection{Neuron to artificial neuron and nets}
+\label{sec:perceptron}
+
+The perceptron, introduced by \citeonline{rosenblatt1958perceptron}, is a simple computational model that mimics the behavior of a biological neuron. It computes a weighted sum of its input features, adds a bias term, and applies a transformation to produce the final output. Formally, for an input vector $\mathbf{x} \in \mathbb{R}^n$, weights $\mathbf{w} \in \mathbb{R}^n$, and bias $b \in \mathbb{R}$, the output $y$ of a perceptron is given by:
+
+\begin{equation}
+y = \phi\left(\mathbf{w}^\top \mathbf{x} + b \right),
+\end{equation}
+
+where $\phi(\cdot)$ denotes a non-linear activation function, responsible for introducing non-linearity into the model. While the original perceptron used the Heaviside step function, modern networks typically employ smoother and differentiable alternatives such as the ReLU or sigmoid functions, though the specifics are beyond the scope of this work~\cite{dubey2021activation, lederer2021activation}.
+
+\begin{figure}[ht]
+    \caption{Structure of a neuron versus the structure of a perceptron.}
+    \centering
+    \includegraphics[width=\textwidth]{images/fundamentacao/nn/perceptron.pdf}
+    \label{fig:perceptron}
+    \par\medskip\ABNTEXfontereduzida\selectfont\textbf{Source:} Author
+    
+\end{figure}
+
+While a single-layer perceptron can only represent linearly separable functions, stacking multiple layers of perceptrons enables the construction of \emph{feedforward neural networks} (also known as \gls{mlp}). In a feedforward network, neurons are organized in successive layers, where each neuron in one layer receives inputs from the previous layer and sends its output to the next layer, without forming cycles.
+
+\begin{figure}[ht]
+    \caption{Basic architecture of a feedforward neural network (MLP) with input, two hidden, and output layers.}
+    \centering
+    \includegraphics[width=0.6\textwidth]{images/fundamentacao/nn/mlp.pdf}
+    \label{fig:mlp}
+    \par\medskip\ABNTEXfontereduzida\selectfont\textbf{Source:} Author
+\end{figure}
+
+This layered architecture allows the network to learn hierarchical feature representations, with each layer extracting increasingly abstract features from the input data. The universal approximation theorem \cite{hornik1989multilayer} guarantees that feedforward networks with at least one hidden layer and suitable activation functions can approximate any continuous function on a compact domain, given sufficient neurons.
+
+Feedforward networks form the backbone of many reinforcement learning algorithms, where they are commonly used to approximate value functions, policies, or models of the environment \cite{silver2016mastering, ddpg, sac}.

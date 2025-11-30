@@ -1,0 +1,40 @@
+\section{Reward Weighting Functions for Reinforcement Learning Methods}
+\label{sec:gen_idea}
+
+In this section, we formalize our method called the \textbf{\textit{Dynamic Lambda Reward Weighting Function}} (\textbf{\textit{DyLam}}). Let $\lambda \in \R^n$ denote the vector of reward weights corresponding to the multi-objective reward vector $r: S \times A \times S \rightarrow \R^n$. DyLam dynamically adjusts these weights throughout training based on the observed reward signals, directing the agent's focus to the most relevant components at each stage. As simpler objectives are learned, their weights are gradually reduced, shifting attention toward more challenging components.
+
+\textbf{1. Reward Decomposition.}
+The first step involves decomposing the reward function into $n$ components that vary over similar ranges.  
+For instance, in a grid world setting, the reward may be decomposed into $x$ and $y$ distances to the target, each normalized to the interval $[0, 1]$.  
+Ensuring comparable magnitudes across reward components is essential so that the weighting mechanism reflects learning difficulty rather than raw value scale.  
+To the best of our knowledge, this normalization principle is absent in prior works~\cite{felten2024multi, capql, alegre2023sample, pgmorl} and is a critical element of DyLam.
+
+\textbf{2. Value Function Decomposition.}
+The overall value function is decomposed into a set of $Q$-functions, each corresponding to a single reward component.  
+This design is grounded in the decomposition proof of~\cite{russell2003q}, which guarantees the soundness of optimizing each component individually in an MDP.  
+In Chapter~\ref{sec:fixlam}, we extend this analysis to include Policy Gradient methods.  
+Each $Q_i(s, a)$ estimates the expected cumulative return of the $i$-th component, computed \textbf{without} applying any scalarization.
+
+\textbf{3. Weight Integration.}
+Finally, the way weights $\lambda$ are applied depends on the RL paradigm: 
+\begin{itemize}
+    \item In \textbf{value-based methods}, at decision time, the scalarized $Q$-value is computed via a weighted sum:
+    \begin{equation}
+        Q(s, a) = \sum_{i=0}^{n} \lambda_i Q_i(s, a)
+    \end{equation}
+    \noindent The next action is then selected as $a' = \arg\max_{a \in A} Q(s, a)$.
+    \item In \textbf{policy gradient methods}, each $Q_i$ is learned independently and the actor's policy is optimized using a scalarized advantage signal weighted by the dynamic $\lambda$. The weight update mechanism guides the focus across components during training.
+\end{itemize}
+This full process is illustrated for actor-critic methods in Figure~\ref{fig:selling_fish} and we further provide the algorithms for both fixed and dynamic $\lambda$ setups in Sections \ref{sec:fixlam} and \ref{sec:dylam}.
+
+It is worth emphasizing that DyLam represents a departure from approaches such as~\cite{capql}.  
+While \citeauthor{capql} treat value estimation as a joint multi-objective learning task, DyLam views the problem as a set of decoupled \gls{sorl} tasks, each optimized independently using standard Bellman updates~\cite{sutton2018reinforcement}.  
+This distinction allows DyLam to preserve convergence guarantees per component and sidestep theoretical concerns raised in~\cite{capql} regarding Bellman-based updates in \gls{morl}.
+
+\begin{figure}[ht]
+    \caption{Visual representation of the method proposed using a Grid World scenario. We decompose the reward function into two potential-based functions ($R_1, R_2$), representing, for example, the Euclidean distances in $x$ and $y$. We incorporate multiple value functions corresponding to distinct reward components. The training of each value function is independent of the others. When using Actor-Critic methods, training the Actor involves utilizing both the $Q$-values from the Critic and the $\lambda$ weights. In contrast, value-based methods like Q-Learning use the product of these values to inform the Policy.}
+    \centering
+    \includegraphics[width=\linewidth]{images/fish.png}
+    \label{fig:selling_fish}
+    \par\medskip\ABNTEXfontereduzida\selectfont\textbf{Source:} Author
+\end{figure}

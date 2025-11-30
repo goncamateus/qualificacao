@@ -1,0 +1,29 @@
+\subsection{MOGymnasium}
+\label{sec:mogym}
+
+MO-Gymnasium is an extension of the Gymnasium library designed specifically for \gls{morl}. It adapts the Gymnasium API to support multi-objective settings, where environments return vector-valued rewards instead of scalar ones. This library fills an essential gap in the ecosystem by providing a standardized interface and a suite of benchmark environments tailored to evaluate multi-objective reinforcement learning algorithms~\cite{felten_toolkit_2023}.
+
+The motivation behind MO-Gymnasium is to maintain compatibility with the Gymnasium ecosystem while introducing minimal yet essential changes to accommodate multiple reward signals. This allows existing Gym-based tools and workflows (e.g., wrappers, monitoring, policies) to be reused with minimal friction, fostering reproducibility and easier benchmarking.
+
+\subsubsection{Changes in the Environment Interface}
+While MO-Gymnasium preserves the core structure of Gymnasium environments, it modifies the reward space to reflect multi-objective feedback. Instead of returning a scalar reward at each step, environments in MO-Gymnasium return a reward vector:
+
+\begin{itemize}
+    \item \textbf{Reward space:} Defined as a \texttt{Box} space with shape $(n,)$, where $n$ is the number of objectives. The reward vector provides feedback across multiple criteria simultaneously.
+    \item \textbf{Observation and action spaces:} These remain identical to standard Gymnasium environments.
+    \item \textbf{Step signature:} The \texttt{step(action)} method returns the same tuple structure as Gymnasium, but the \texttt{reward} entry is now a vector.
+\end{itemize}
+
+This change requires agents to be capable of interpreting and optimizing over a vectorial signal, often by applying scalarization methods or multi-policy learning.
+
+\subsubsection{MO Wrappers}
+MO-Gymnasium also introduces a small but useful set of wrappers tailored for \gls{morl}:
+
+\begin{itemize}
+    \item \texttt{LinearReward}: Applies a linear scalarization function to the reward vector, producing a scalar value.
+    \item \texttt{MONormalizeReward}: Normalizes each reward dimension to a predefined range, facilitating learning and comparison across objectives.
+\end{itemize}
+
+These wrappers enable flexible experimentation with scalarization strategies and preference-based learning, while keeping the environment and reward logic modular.
+
+MO-Gymnasium is publicly available\footnote{\url{https://github.com/Farama-Foundation/MO-Gymnasium}} and is actively maintained as part of the Farama ecosystem. Its growing library of environments includes multi-objective adaptations of classic domains such as MountainCar, LunarLander, and MuJoCo's environments, making it a key tool for benchmarking and developing MORL algorithms.

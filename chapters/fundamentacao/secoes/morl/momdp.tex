@@ -1,0 +1,33 @@
+\subsection{Multi-Objective MDPs}
+\label{sec:momdp}
+
+\gls{morl} extends the standard reinforcement learning framework to environments where multiple, often conflicting, objectives must be considered during learning and decision-making. This aligns naturally with the principles of \gls{moo}, where agents seek to balance trade-offs across several goals.
+
+Many concepts from multi-objective optimization have direct analogies in reinforcement learning. For instance, the \emph{objective functions} in \gls{moo} correspond to distinct \emph{reward signals} in RL. The \emph{decision space} is represented in RL by the space of possible policies, and the \emph{Pareto front} corresponds to the set of \emph{Pareto optimal policies}, where no policy is strictly better across all objectives.
+
+In order to introduce multi-objective sequential decision problems, we formalize the \gls{momdp}. In contrast to the classic \gls{mdp}, the multi-objective branch deals with multiple reward signals, and thus the reward function is adapted to produce a vector of rewards. Formally, a \gls{momdp} is represented by a tuple $(\mathcal{S}, \mathcal{A}, \mathcal{P}, \vec{\mathcal{R}}, \gamma)$, where:
+\begin{itemize}
+    \item $\mathcal{S}$ is a finite set of states,
+    \item $\mathcal{A}$ is a finite set of actions,
+    \item $\mathcal{P}: \mathcal{S} \times \mathcal{A} \rightarrow \mathcal{P}(\mathcal{S})$ is the transition function,
+    \item $\vec{\mathcal{R}}: \mathcal{S} \times \mathcal{A} \times \mathcal{S} \rightarrow \mathbb{R}^d$ is a vector-valued reward function with $d \geq 2$ objectives,
+    \item and $\gamma \in [0,1)$ is the discount factor.
+\end{itemize}
+
+\subsubsection{Multi-Objective Value Functions}
+In the single-objective case, the value function quantifies the expected return of following a policy $\pi$, given a scalar reward signal. In the multi-objective setting, this concept is naturally extended: value functions become vector-valued, where each component corresponds to the expected discounted return with respect to a particular objective.
+
+Formally, the state-value function $V^\pi: \mathcal{S} \rightarrow \mathbb{R}^d$ is defined as:
+\begin{equation}
+    V^\pi(s) = \mathbb{E}_\pi \left[ \sum_{t=0}^{\infty} \gamma^t \vec{r}_t \,|\, s_0 = s \right],
+\end{equation}
+where $\vec{r}_t \in \mathbb{R}^d$ is the reward vector received at time step $t$.
+
+Similarly, the action-value function $Q^\pi: \mathcal{S} \times \mathcal{A} \rightarrow \mathbb{R}^d$ is defined as:
+\begin{equation}
+    Q^\pi(s,a) = \mathbb{E}_\pi \left[ \sum_{t=0}^{\infty} \gamma^t \vec{r}_t \,|\, s_0 = s, a_0 = a \right].
+\end{equation}
+
+These vector-valued value functions reflect the expected cumulative reward across all objectives. Importantly, since there is no total order over $\mathbb{R}^d$ (for $d > 1$), comparing policies directly becomes non-trivial. Instead of seeking a single optimal policy, MORL typically aims to find a set of \emph{Pareto optimal policies}—those for which no other policy improves on one objective without degrading another.
+
+To support policy selection or preference learning, additional mechanisms—such as scalarization functions, utility models, or preference queries—are often introduced. These mechanisms allow vector-valued value functions to be projected into a scalar form, enabling the reuse of standard RL machinery, or to maintain diversity for downstream decision support, as discussed in Section~\ref{sec:mo_setups}.

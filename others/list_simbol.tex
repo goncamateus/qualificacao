@@ -7,16 +7,38 @@
 % inserir lista de símbolos
 % ---
 \begin{simbolos}
-  \item[$ \gamma $] Letra grega Gama
-  %\item[$ \Lambda $] Lambda
-  %\item[$ \zeta $] Letra grega minúscula zeta
-  \item[$ \in $] Pertence
-%  \item[$ \infty$] Infinito
-%  \item[$ \ge$] Maior ou Igual
-  \item[$ \delta$] Delta
-  \item[$ \theta$] Teta
-  \item[$ \sigma$] Sigma
-  \item[$ \mu$] Mi
+  \item[$ s, s' $] states
+  \item[$ a $] an action
+  \item[$ r $] a reward
+  \item[$ \textit{S} $] set of all non-terminal states states
+  \item[$ \textit{S}^+ $] set of all states, including the terminal state
+  \item[$ \textit{A}(s) $] set of all actions available in state $s$
+  \item[$ \textit{R} $] set of all possible rewards, a finite subset of $\R$
+  \item[$ \in $] is an element of, \textit{e.g.} ($s \in \textit{S}, r \in \textit{R}$)
+  \item[$ \subset $] subset of, \textit{e.g.} ($\textit{R} \subset \R$)
+  \item[$ t $] discrete time step
+  \item[$ T$] final time step of an episode
+  \item[$ G_t $] return value following time $t$
+  \item[$ \alpha $] learning-rate of a learning method
+  \item[$ \gamma $] discount-rate parameter
+  \item[$\epsilon$] probability of taking a random action in an $\epsilon$-greedy policy
+  \item[$ \lambda $] vector of weights for each sub-reward
+  \item[$ \zeta $] inverse score of the component according to its maximum reward
+  \item[$ \theta, \theta_t$] parameter vector of target policy 
+  \item[$ \pi(a|s, \theta)$] probability of taking action $a$ in state $s$ given parameter vector $\theta$ 
+  \item [$\pi_{\theta}$] policy corresponding to paremeter $\theta$
+  \item[$ \nabla\pi(a|s, \theta)$] column vector of partial derivatives of $\pi(a|s, \theta)$ with respect to $\theta$
+  \item[$ J(\theta)$] performance measure for the policy $\pi_{\theta}$
+  \item[$ \nabla J(\theta)$] column vector of partial derivatives of $J(\theta)$ with respect to $\theta$
+  \item[$Pr\{X = x\}$] probability that a random variable $X$ takes on the value $x$
+  \item[$\E\{X\}$] expectation of a random variable $X$, i.e., $\E\{X\} 	\doteq \sum_x p(x)x$
+  \item[$ v_\pi(s) $] value of state $s$ under policy $\pi$ (expected return)
+  \item[$ v^*(s) $] value of state $s$ under optimal policy
+  \item[$ q_\pi(s,a) $] value of taking action $a$ in state $s$ under policy $\pi$
+  \item[$ q^*(s,a) $]  value of taking action $a$ in state $s$ under optimal policy
+  
+  
+
   
 \end{simbolos}
 % ---

@@ -1,0 +1,15 @@
+\begin{table}[ht]
+\caption{Hyper volume (HV) of the \gls{pf} of the methods. The hyper volume is represented in log scale, and the time consumption of the training process in minutes.}
+\begin{tabular}{|c|c|c|c|}
+\hline
+Method    & HV (log10)      & Cardinality  & Time (m)    \\ \hline
+Envelope  & 7.479           & 100          & 51          \\ \hline
+GPI-LS    & 7.559           & 100          & 1200        \\ \hline
+PCN       & 7.377           & 100          & 62          \\ \hline
+IPRO      & 7.526           & \textbf{526} & 69          \\ \hline
+DQN       & 10.708          & 69           & 83          \\ \hline
+DRQ       & 11.164          & 54           & 70          \\ \hline
+DyLam-DQN & \textbf{11.236} & 73           & \textbf{42} \\ \hline
+\end{tabular}
+\label{tab:hv_reacher}
+\end{table}

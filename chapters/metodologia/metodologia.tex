@@ -1,51 +1,12 @@
-\chapter{Texto Texto Texto}
-%não se esqueça de definir uma label única para utilizar no comando \ref
-\label{chap:metodologia}
+\chapter{Methodology}
+\label{chap:method}
 
-Texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto.
+In this chapter, we formalize the methods proposed in this work. Drawing inspiration from the techniques discussed in Chapter~\ref{chap:background}, we aim to develop a minimally intrusive framework capable of adapting to the training context and enhancing the reward component that is most relevant at each moment.
 
-%exemplos de parágrafos com footnote
-Texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto \textit{Footnote} \footnote{Segundo \citeonline{manualufpe2020}, Exemplo de nota de rodapé.}.
+We begin by introducing a high-level overview of the proposed methodology. Then, we detail the mathematical formulation of both the static and dynamic reward weighting strategies used in our experiments. Finally, we present an analysis on a toy problem designed to show the outcomes of our method.
 
-\section{Texto Texto}
-\label{sec:algumlabel}
-
-Texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto.
-
-Texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto \textit{Footnote} \footnote{Segundo \citeonline{manualufpe2020}, Exemplo de nota de rodapé 2.}.
-
-%exemplo de código fonte, as configurações estão no arquivo packages.tex
-\lstinputlisting[language=PHP, 
-caption=Texto texto texto texto
-,label=lst:exemplocodigo1]{chapters/trechos_codigo/funcoescatdinamicas.m}
-
-\hspace{4cm}
-\hfill
-\begin{minipage}[t]{.65\textwidth}
-\ABNTEXfontereduzida\selectfont\textbf{Fonte:} Elaborado pelo autor (2020) 
-\end{minipage}
-
-
-Texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto, referente ao Código Fonte \ref{lst:exemplocodigo1} função \texttt{nome\_funcao}.
-
-\subsection{Texto Texto Texto}
-\label{subsec:algumlabel}
-
-Texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto.
-
-\section{Texto Texto}
-\label{sec:algumlabel2}
-%exemplo de quadro
-Texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto, ver Quadro \ref{quad:exemplo_de_quadro}.
-
-\input{chapters/metodologia/quadros/exemplo_de_quadro}
-
-
-\subsection{Texto Texto Texto}
-\label{subsec:algumlabel2}
-Texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto.
-
-\subsection{Texto Texto Texto}
-\label{subsec:algumlabel3}
-
-Texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto.
+% \input{chapters/metodologia/secoes/sufficient_pareto}
+\input{chapters/metodologia/secoes/reward_weighting_methods}
+\input{chapters/metodologia/secoes/reward_weighting_methods/fixlam}
+\input{chapters/metodologia/secoes/reward_weighting_methods/dylam}
+\input{chapters/metodologia/secoes/chicken_banana}

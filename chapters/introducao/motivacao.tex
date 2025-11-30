@@ -1,13 +1,28 @@
-\section{Texto Texto Texto}
-\label{motivacao}
+\section{motivation}
+\label{sec:motivation}
 
-Texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto, \textbf{exemplo} sigla \gls{UFPE}.
+Despite the increasing success of Reinforcement Learning in a variety of domains, training agents to perform complex tasks remains a considerable challenge—particularly when the environment is characterized by sparse or delayed rewards. In such scenarios, agents may receive little to no feedback for long periods, hindering the learning process~\cite{sutton2018reinforcement}.
 
-\input{images/captitulo1/figuraex}
+\begin{figure}
+\caption{The Mountain Car learning environment described in ~\cite{towers2024gymnasium} is a great example of how sparse rewards affect the learning process.}
+\centering
+\includegraphics[width=0.5\linewidth]{images/captitulo1/motivacao/mountain_car.png}
+\label{fig:intro/mountain_car}
+\par\medskip\ABNTEXfontereduzida\selectfont\textbf{Source:} \cite{towers2024gymnasium}
+\end{figure}
 
-Texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto, conforme Figuras \ref{fig:figuraex} e Figuras \ref{fig:figuraex2}, continua no Capítulo \ref{chap:outrocapitulo}.
+A well-known toy example that captures the essence of reinforcement learning is the Mountain Car environment \cite{towers2024gymnasium}. In this scenario, an underpowered car is stuck in a valley between two hills and must learn how to build enough momentum to reach the top of the right hill. Simply accelerating forward is not sufficient—the car must first move back and forth, gaining speed through successive swings (see \fref{fig:intro/mountain_car}). The agent receives sparse rewards, typically only when it reaches the goal, and must learn through repeated interaction how its actions influence future states and rewards. This example highlights the challenge of discovering effective strategies in environments with delayed and infrequent feedback.
 
+Notably, the Mountain Car example illustrates several fundamental aspects of the \gls{rl} process. Central to reinforcement learning is the \emph{interaction} between an \emph{agent} and its learning \emph{environment}, where the agent aims to achieve a specific \emph{objective} despite facing \emph{uncertainty} about how its actions will influence future outcomes. In this case, the agent can choose to accelerate left or right, which directly affects its current and future \emph{state}s. These decisions not only impact immediate progress but also determine the set of options available at subsequent steps. For instance, accelerating in the wrong direction at the wrong time may prevent the agent from gaining enough momentum to reach the goal, illustrating how delayed consequences and strategic decision-making are crucial to successful learning.
 
-\input{images/captitulo1/figuraex2}
+To learn effectively in such environments, an agent relies on several core components. The \emph{policy} defines the agent’s behavior by mapping each \emph{state} to a specific action or a probability distribution over actions. It is essentially the agent's strategy for deciding what to do at each step. In some cases, the agent may also use a \emph{model of the environment}, which attempts to predict the next state and reward given the current state and action. These elements work together to help the agent improve its behavior over time, balancing immediate rewards with long-term gains~\cite{sutton2018reinforcement}.
 
-Texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto \gls{UFPE}.
+In this work, our main contributions encompass two other core features, \emph{rewards} and \emph{value functions}, therefore it is important to understand their role in the learning process and distinguish them, despite the relation between them. The reward is a scalar signal received from the environment, providing immediate feedback on the desirability of an action taken in a given state. It is the most direct form of supervision in reinforcement learning, guiding the agent moment by moment. In contrast, the value function estimates the long-term expected return—typically defined as the cumulative sum of future rewards—starting from a given state or state-action pair and following a particular policy~\cite{sutton2018reinforcement}.
+
+While rewards define what is desirable, value functions inform the agent of how desirable different states or actions are in terms of future potential. This distinction is crucial: an agent may not learn effective behavior by relying solely on immediate rewards, especially in environments with delayed or sparse feedback. Instead, by learning accurate value functions, the agent can anticipate future outcomes and make informed decisions that balance short-term sacrifices for long-term gains. The design of reward signals and the estimation of value functions are thus deeply interconnected and central to the success of any reinforcement learning approach~\cite{ng1999policy}.
+
+Reward shaping has been introduced as a technique to mitigate this issue by augmenting the environment's reward signal with additional, informative feedback. These auxiliary signals correspond to sub-tasks or intermediate objectives that the agent must achieve en route to accomplishing the primary task \cite{ng1999policy}. Each reward component contributes a weighted term to the final reward function, with the relative importance of each component governed by a set of weights, denoted as $\lambda$.
+
+These weights play a pivotal role in defining the agent’s learning trajectory. They encode a static curriculum that implicitly guides the agent’s behavior by emphasizing certain aspects of the task over others throughout training \cite{curriculum}. However, selecting appropriate weightings is non-trivial. Improperly balanced reward components may lead the agent to overfit to simpler sub-tasks while neglecting critical, but harder-to-learn, behaviors.
+
+Consider, for example, a simulated soccer environment in which the agent’s ultimate goal is to score goals. To reach this objective, it must first acquire skills such as moving toward the ball, dribbling, and shooting. A well-designed curriculum would initially encourage the development of basic motor control and ball handling before shifting focus toward higher-level strategic actions like shooting. If the reward structure overemphasizes early-stage sub-skills and underweights goal-scoring, the agent may converge to policies that excel at ball possession but never learn to score.
