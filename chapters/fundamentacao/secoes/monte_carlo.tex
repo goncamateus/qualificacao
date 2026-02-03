@@ -1,0 +1,51 @@
+\section{Monte Carlo Learning}
+\label{sec:monte_carlo}
+
+\gls{mc} methods are a foundational class of model-free reinforcement learning techniques that estimate value functions and optimize policies by relying exclusively on sampled experience. The term ``Monte Carlo'' refers to methods that solve problems through random sampling — a concept originating from simulations used in physics and mathematics, and named after the famous casino in Monaco due to their reliance on stochasticity and chance \cite{kroese2014monte}. In reinforcement learning, this stochastic element comes from the interaction between the agent and the environment, where the agent collects data through episodes and averages the observed returns.
+
+Unlike dynamic programming, which requires full knowledge of the environment’s transition and reward functions, Monte Carlo methods operate without access to a model. Instead, they use complete sequences of experience — also known as episodes — to estimate the expected return from states or state-action pairs. These experiences are formed by tuples of the form $(s, a, r, s')$, representing a single interaction between the agent and the environment.
+
+The experience collected can be either \textit{real}, obtained through direct interaction with the environment, or \textit{simulated}, produced by a learned or hand-crafted model. Regardless of the source, Monte Carlo methods assume that these episodes are representative of the agent’s behavior under a fixed policy and that they can be used to estimate long-term returns by averaging the observed outcomes.
+
+Because Monte Carlo methods require the return to be computed over an entire episode, they are naturally suited for \textbf{episodic tasks}. In such cases, policy updates typically occur at the end of each episode. For continuing tasks, updates are often performed every fixed number of steps, simulating artificial episodes to approximate returns. This episodic nature introduces a key characteristic of \gls{mc} methods: they are incremental only in an \textit{episode-by-episode} sense, but not in a \textit{step-by-step} fashion~\cite[p.~91]{sutton2018reinforcement}.
+
+However, this reliance on episodic returns also introduces challenges. One of them is the \textbf{nonstationarity} of the return distribution: as the policy changes over time, previously collected experiences may no longer reflect the behavior of the current policy, making naive averaging potentially biased. For this reason, care must be taken when applying \gls{mc} methods in non-stationary or off-policy settings, often requiring additional tools such as importance sampling to correct for distributional shifts \cite{sutton2018reinforcement}.
+
+Once the agent collects complete episodes under a fixed policy $\pi$, the next step is to estimate the value of states encountered during these episodes. This process is known as \textbf{Monte Carlo prediction}, and its goal is to compute the state-value function $v_\pi(s)$ using empirical returns.
+
+The return, denoted by $G_t$, represents the cumulative reward obtained by the agent from time step $t$ onward. For a given trajectory $(S_0, A_0, R_1, \ldots, S_T)$, the return is defined as:
+\begin{equation}
+    G_t = R_{t+1} + \gamma R_{t+2} + \gamma^2 R_{t+3} + \cdots = \sum_{k=0}^\infty \gamma^k R_{t+k+1}
+\end{equation}
+In episodic tasks, where the episode eventually terminates, this summation is finite and can be computed exactly.
+
+To estimate $v_\pi(s)$, Monte Carlo methods average the observed returns following visits to state $s$ across multiple episodes. More formally, we use:
+\[
+v_\pi(s) \approx \frac{1}{N(s)} \sum_{i=1}^{N(s)} G^{(i)}_t
+\]
+where $G^{(i)}_t$ is the return after the $i$-th visit to state $s$, and $N(s)$ is the number of such visits. By the law of large numbers, this average converges to the expected return as the number of episodes grows \cite{sutton2018reinforcement}.
+
+There are different strategies to determine which returns should be included in the averaging process. A commonly used one is the \textbf{first-visit Monte Carlo} method, which updates the value of a state only using the first time it appears in each episode. This helps reduce the correlation between multiple returns from the same state within a single episode. We describe it in Algorithm \ref{algo:first_visit}.
+
+\begin{algorithm}[ht]
+\caption{First-Visit Monte Carlo Prediction}
+\begin{algorithmic}[1]
+\Require A policy $\pi$ to be evaluated
+\State Initialize $V(s) \in \R$, arbitrarily, for all $s \in \mathcal{S}$
+\State Initialize \textit{Returns}$(s) \leftarrow$ an empty list, for all $s \in \mathcal{S}$ 
+\For{each episode}
+    \State Generate an episode: $s_0, a_0, r_1, \ldots, s_T$
+    \State $G \leftarrow 0$
+    \For{$t = T-1$ \textbf{to} $0$}
+        \State $G \leftarrow \gamma G + r_{t+1}$
+        \If{$s_t$ does not appears in $s_0, s_1, \ldots, s_{t-1}$}
+            \State Append G to \textit{Returns}$(s_t)$
+            \State $V(s_t) \leftarrow$ average$($\textit{Returns}$(s_t))$
+        \EndIf
+    \EndFor
+\EndFor
+\end{algorithmic}
+\label{algo:first_visit}
+\end{algorithm}
+
+Despite its simplicity, this strategy exemplifies how Monte Carlo prediction can be implemented without requiring knowledge of transition dynamics, and how returns can be used directly to evaluate policies. Alternative strategies, such as every-visit MC or weighted averaging, can be applied depending on the characteristics of the environment and the desired bias-variance trade-off~\cite{sutton2018reinforcement}.

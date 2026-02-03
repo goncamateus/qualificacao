@@ -1,0 +1,79 @@
+\subsection{Ablation Study}
+
+The DyLam framework introduces several sensitive design choices and hyperparameters that can significantly influence its learning behavior. In particular, these include the update rate of the reward-weighting coefficients, denoted by $\tau_{\lambda}$, and the capacity of DyLam’s experience buffer, $\overline{RB^{i}_{E}}$. Additionally, the formulation in Equation~\ref{eq:lambda_func_fixed} employs a softmax-based normalization, which, while ensuring bounded and comparable weights, may introduce abrupt changes in the reward prioritization dynamics. 
+
+Furthermore, as DyLam is evaluated in the Chicken--Banana environment within a value-based reinforcement learning paradigm, the choice of exploration strategy plays a crucial role in overall performance~\cite{sutton2018reinforcement}. In our experiments, we adopt an $\epsilon$-greedy exploration policy with a decaying schedule, which introduces an additional sensitive hyperparameter governing the exploration--exploitation trade-off.
+
+In this subsection, we conduct a systematic ablation study by varying each of the aforementioned parameters independently. The goal is to isolate and quantify their individual impact on learning dynamics, convergence properties, and final performance, thereby providing a clearer understanding of how each component contributes to DyLam’s dynamic reward-weighting mechanism.
+
+\subsubsection{DyLam update rate}
+
+This ablation study investigates the influence of the update rate $\tau_{\lambda}$ on the temporal evolution of the reward-weighting coefficients in DyLam. By evaluating multiple values of $\tau_{\lambda}$, we aim to characterize how quickly the method reacts to variations in the reward signals and how this responsiveness affects training stability, convergence dynamics, and asymptotic performance.
+
+Figure~\ref{fig:ablation/tau} reports the results obtained for three different values of $\tau_{\lambda}$. As expected, smaller values of $\tau_{\lambda}$ lead to more pronounced fluctuations in the reward components, reflecting a higher sensitivity of the weighting mechanism to short-term variations. As a direct consequence of this increased reward instability, the adaptive coefficients $\vec{\lambda}$ also exhibit larger oscillations as $\tau_{\lambda}$ decreases.
+
+Despite this heightened variability, the averaged performance indicates that the agent was still able to achieve all objectives in at least half of the episodes. This observation partially challenges the quasi-static update assumption for $\vec{\lambda}$ discussed in Section~\ref{sec:dylam}. However, such behavior is unlikely to generalize to environments with higher-dimensional state–action spaces, where rapid updates of $\vec{\lambda}$ would likely exacerbate instability and hinder convergence. Therefore, the observed robustness should be interpreted as a consequence of the highly constrained nature of this toy-problem setting.
+
+\begin{figure}[ht]
+    \centering
+    \caption{Evolution of the reward components (top row) and adaptive $\lambda$-weights (middle row) in the Chicken--Banana environment across 10 seeds, together with a single-run analysis of the $\lambda$-weights (bottom row), over 2000 training episodes for different update rates $\tau_{\lambda} \in \{0.5, 0.7, 0.99\}$. The corresponding curves are shown in green, red, and blue, respectively. Solid curves represent the mean across seeds, while the shaded regions indicate the minimum--maximum range, illustrating the increased variability induced by faster update rates.}
+    \includegraphics[width=\linewidth]{images//metodologia//tau/combined_results.pdf}
+    \par\medskip\ABNTEXfontereduzida\selectfont\textbf{Source:} Author
+    \label{fig:ablation/tau}
+\end{figure}
+
+\subsubsection{DyLam experience buffer}
+
+This ablation study examines the impact of the experience buffer capacity $E$ on DyLam’s behavior. By varying the buffer size, we analyze the trade-off between short-term responsiveness to recent interactions and the increased stability expected from averaging over a longer history of experiences.
+
+Figure~\ref{fig:ablation/rb} reveals an interesting discrepancy between single-run and aggregated analyses. While the single-run results exhibit the expected behavior—namely, smoother adaptations of the $\vec{\lambda}$ coefficients as $E$ increases—the aggregated results across 10 seeds do not show a similarly pronounced effect. In particular, although the single-run analysis suggests that larger buffers effectively dampen rapid fluctuations in $\vec{\lambda}$, the overall variability observed across seeds remains largely unchanged when modifying $E$.
+
+Consistent with the previous ablation study, variations in the buffer capacity have only a marginal impact on the mean evolution of the reward components in this environment. This outcome reinforces the interpretation that the Chicken--Banana task constitutes a highly constrained toy problem, in which structural properties of the environment dominate the learning dynamics and partially mask the stabilizing effects typically associated with larger experience buffers.
+
+\begin{figure}[ht]
+    \centering
+    \caption{Evolution of the reward components (top row) and adaptive $\lambda$-weights (middle row) in the Chicken--Banana environment across 10 seeds, together with a single-run analysis of the $\lambda$-weights (bottom row), over 2000 training episodes for experience buffer sizes $E \in \{10, 50, 100\}$. The corresponding curves are shown in blue, green, and red, respectively. Solid curves denote the mean across seeds, while the shaded regions indicate the minimum--maximum range.}
+    \includegraphics[width=\linewidth]{images//metodologia//rb/combined_results.pdf}
+    \par\medskip\ABNTEXfontereduzida\selectfont\textbf{Source:} Author
+    \label{fig:ablation/rb}
+\end{figure}
+
+
+\subsubsection{DyLam normalizer}
+
+This ablation study investigates the normalization mechanism employed in Equation~\ref{eq:lambda_func_fixed}. In particular, we analyze the effect of the proposed softmax normalizer on the smoothness of the reward-weight updates and compare it against alternative normalization strategies, with the goal of assessing whether softer transitions can improve learning stability without sacrificing adaptivity. In addition to the softmax normalization, we consider an $\ell_1$ normalizer,
+\[
+\frac{\overline{RB^i_e}}{\sum_{j=1}^{N} \overline{RB^j_e}} ,
+\]
+and a min--max normalizer,
+\[
+\frac{\bigl(\max \overline{RB_e} - \overline{RB^i_e}\bigr)}{\bigl(\max \overline{RB_e} - \min \overline{RB_e}\bigr)}.
+\]
+
+Figure~\ref{fig:ablation/normalizer} summarizes the results of this comparison. As anticipated, the min--max normalization leads to noticeably noisier dynamics and inferior performance relative to the other methods, a behavior consistent with its well-known sensitivity to extreme values and rapid changes in the reward signal. In contrast, the $\ell_1$ normalizer achieves performance and $\vec{\lambda}$ adaptation patterns comparable to those obtained with the proposed softmax approach. This suggests that, while the softmax normalizer provides smoother and more stable updates in general, the $\ell_1$ normalization constitutes a viable alternative in scenarios where the use of softmax may be undesirable or impractical.
+
+\begin{figure}[ht]
+    \centering
+    \caption{Evolution of the reward components (top row) and adaptive $\lambda$-weights (bottom row) in the Chicken--Banana environment across 10 seeds, over 2000 training episodes, using $\ell_1$, min--max, and softmax normalization strategies (green, red, and blue, respectively) in Equation~\ref{eq:lambda_func_fixed}. Solid curves denote the mean across seeds, while the shaded regions indicate the minimum--maximum range.}
+    \includegraphics[width=\linewidth]{images//metodologia//normalizer/combined_results.pdf}
+    \par\medskip\ABNTEXfontereduzida\selectfont\textbf{Source:} Author
+    \label{fig:ablation/normalizer}
+\end{figure}
+
+\subsubsection{Epsilon-greedy decay}
+
+Finally, we analyze the sensitivity of DyLam to the decay schedule of the $\epsilon$-greedy exploration policy. Different decay rates are evaluated to examine how the exploration--exploitation trade-off interacts with DyLam’s adaptive reward weighting and how this interaction influences convergence speed and final policy quality.
+
+Figure~\ref{fig:ablation/epsilon} indicates that the $\epsilon$-decay rate is the most sensitive hyperparameter among those considered in our ablation study. When selecting an appropriate decay for DyLam, we hypothesize that effective learning requires maintaining a sufficiently high exploration level—approximately $50$--$70\%$—for each reward component. In this setting, a decay factor of $\epsilon_d = 0.99$ satisfies this criterion, and the resulting behavior shown in Figure~\ref{fig:ablation/epsilon} aligns with this expectation. In contrast, decay values of $\epsilon_d = 0.8$ and $\epsilon_d = 0.9$ lead to premature exploitation, preventing adequate exploration of all reward components.
+
+However, when these results are contrasted with the $Q$-learning baseline in Figure~\ref{fig:meth/rew_chicken_banana}, it becomes evident that even under an exploration regime that is optimal for DyLam, the baseline method fails to learn all reward components. This observation suggests that DyLam’s hyperparameters do not constitute the primary bottleneck in performance. Instead, the limitations of the underlying learning algorithm dominate the observed behavior. In this sense, DyLam should be interpreted as a framework that facilitates curriculum learning when paired with a sufficiently expressive and capable base method, rather than as a source of restrictive inductive bias.
+
+\begin{figure}[ht]
+    \centering
+    \caption{Evolution of the reward components (top row) and adaptive $\lambda$-weights (bottom row) in the Chicken--Banana environment across 10 seeds, over 2000 training episodes, for different $\epsilon$-decay values $\epsilon_d \in \{0.8, 0.9, 0.99\}$. The corresponding curves are shown in blue, green, and red, respectively. Solid curves denote the mean across seeds, while the shaded regions indicate the minimum--maximum range.}
+    \includegraphics[width=\linewidth]{images//metodologia//epsilon/combined_results.pdf}
+    \par\medskip\ABNTEXfontereduzida\selectfont\textbf{Source:} Author
+    \label{fig:ablation/epsilon}
+\end{figure}
+
+Overall, this ablation study demonstrates that the primary ``thermometer'' hyperparameters introduced by DyLam do influence learning dynamics, but they are not the dominant factor limiting performance. Rather, the choice and capacity of the underlying reinforcement learning algorithm exert a substantially stronger effect on the agent’s ability to solve the task, with DyLam acting as an enabling mechanism rather than a constraining one.

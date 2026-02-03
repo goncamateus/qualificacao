@@ -1,4 +1,4 @@
-\subsection{Neuron to artificial neuron and nets}
+\subsection{From Biological Neurons to Artificial Neural Networks}
 \label{sec:perceptron}
 
 The perceptron, introduced by \citeonline{rosenblatt1958perceptron}, is a simple computational model that mimics the behavior of a biological neuron. It computes a weighted sum of its input features, adds a bias term, and applies a transformation to produce the final output. Formally, for an input vector $\mathbf{x} \in \mathbb{R}^n$, weights $\mathbf{w} \in \mathbb{R}^n$, and bias $b \in \mathbb{R}$, the output $y$ of a perceptron is given by:
@@ -7,7 +7,7 @@ The perceptron, introduced by \citeonline{rosenblatt1958perceptron}, is a simple
 y = \phi\left(\mathbf{w}^\top \mathbf{x} + b \right),
 \end{equation}
 
-where $\phi(\cdot)$ denotes a non-linear activation function, responsible for introducing non-linearity into the model. While the original perceptron used the Heaviside step function, modern networks typically employ smoother and differentiable alternatives such as the ReLU or sigmoid functions, though the specifics are beyond the scope of this work~\cite{dubey2021activation, lederer2021activation}.
+\noindent where $\phi(\cdot)$ denotes a non-linear activation function, responsible for introducing non-linearity into the model. While the original perceptron used the Heaviside step function, modern networks typically employ smoother and differentiable alternatives such as the ReLU or sigmoid functions, though the specifics are beyond the scope of this work~\cite{dubey2021activation, lederer2021activation}.
 
 \begin{figure}[ht]
     \caption{Structure of a neuron versus the structure of a perceptron.}

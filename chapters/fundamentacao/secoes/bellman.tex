@@ -1,0 +1,65 @@
+\section{Bellman Equations}
+\label{sec:bellman}
+
+The formal definition of a \gls{mdp} allows us to reason about the quality of states and actions through \emph{value functions}. These functions quantify the expected long-term return obtained by an agent when interacting with the environment under a given policy. The recursive relationships that characterize such functions are known as the \emph{Bellman equations}~\cite{sutton2018reinforcement}.
+
+Originally introduced by Richard Bellman in the context of dynamic programming~\cite{bellman1966dynamic}, these equations express a fundamental principle: the value of a decision can be decomposed into the immediate reward obtained and the value of subsequent decisions. This recursive structure enables reasoning about long-term consequences without explicitly enumerating all future trajectories.
+
+Let $\pi: \mathcal{S} \rightarrow \mathcal{A}$ denote a (possibly stochastic) policy. The \textbf{state-value function} $v_\pi(s)$ is defined as the expected return when the agent starts in state $s$ and follows policy $\pi$ thereafter:
+\begin{equation}
+v_\pi(s) = \mathbb{E}_\pi \left[ \sum_{t=0}^{\infty} \gamma^t r_{t+1} \,\middle|\, s_0 = s \right].
+\end{equation}
+
+By conditioning on the first action selected under $\pi$ and the subsequent state transition, this definition induces a recursive relationship between the value of a state and the values of its successor states. This relationship is formalized by the \textbf{Bellman expectation equation}, which the state-value function satisfies:
+\begin{equation}
+v_\pi(s) = \sum_{a \in \mathcal{A}} \pi(a|s)
+\sum_{s' \in \mathcal{S}} \mathcal{P}(s'|s,a)
+\left[ \mathcal{R}(s,a) + \gamma v_\pi(s') \right].
+\label{eq:bellman_value}
+\end{equation}
+
+Analogously, the \textbf{action-value function} $q_\pi(s,a)$ represents the expected return obtained by taking action $a$ in state $s$ and then following policy $\pi$:
+\begin{equation}
+q_\pi(s,a) = \mathbb{E}_\pi \left[ \sum_{t=0}^{\infty} \gamma^t r_{t+1}
+\,\middle|\, s_0 = s, a_0 = a \right].
+\end{equation}
+
+Applying the same recursive reasoning yields the Bellman expectation equation for the action-value function:
+\begin{equation}
+q_\pi(s,a) =
+\sum_{s' \in \mathcal{S}} \mathcal{P}(s'|s,a)
+\left[
+\mathcal{R}(s,a)
++ \gamma \sum_{a' \in \mathcal{A}} \pi(a'|s') q_\pi(s',a')
+\right].
+\label{eq:bellman_action_value}
+\end{equation}
+
+While these equations characterize the expected return under a fixed policy, the central objective in reinforcement learning is to identify an \emph{optimal policy} $\pi^*$ that maximizes the expected return from every state. This leads to the definition of the \textbf{optimal value functions}:
+\begin{align}
+v_*(s) &= \max_{\pi} v_\pi(s), \\
+q_*(s,a) &= \max_{\pi} q_\pi(s,a).
+\end{align}
+
+These functions satisfy the \textbf{Bellman optimality equations}, in which the expectation over actions is replaced by a maximization operator. The optimal state-value function obeys:
+\begin{equation}
+v_*(s) =
+\max_{a \in \mathcal{A}}
+\sum_{s' \in \mathcal{S}} \mathcal{P}(s'|s,a)
+\left[ \mathcal{R}(s,a) + \gamma v_*(s') \right],
+\label{eq:bellman_opt_value}
+\end{equation}
+and the optimal action-value function satisfies:
+\begin{equation}
+q_*(s,a) =
+\sum_{s' \in \mathcal{S}} \mathcal{P}(s'|s,a)
+\left[ \mathcal{R}(s,a) + \gamma \max_{a' \in \mathcal{A}} q_*(s',a') \right].
+\label{eq:bellman_opt_q}
+\end{equation}
+
+An optimal policy can then be recovered by acting greedily with respect to $q_*$:
+\begin{equation}
+\pi^*(s) = \arg\max_{a \in \mathcal{A}} q_*(s,a).
+\end{equation}
+
+Although the Bellman equations provide an exact characterization of optimal behavior, solving them directly requires complete knowledge of the environment dynamics and is computationally intractable for large or continuous state and action spaces~\cite{mnih2015human, ddpg, tesauro1994td}. These limitations motivate the development of approximate, sample-based, and function-approximation methods, which form the basis of the reinforcement learning algorithms discussed in the subsequent sections.

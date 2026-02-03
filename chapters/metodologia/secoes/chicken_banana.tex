@@ -1,11 +1,13 @@
 \section{Analysis of the ``Chicken-Banana'' Problem}
+\label{sec:chickenbanana}
 
-To demonstrate the efficacy of our proposed method, we introduce a novel Grid-World environment termed the ``Chicken-Banana'' problem. The environment layout is illustrated in Figure \ref{fig:chicken_banana_env}. This domain is formulated as a Markov Decision Process (MDP) defined by discrete state and action spaces. The action space $\mathcal{A}$ consists of four discrete movement primitives: $\mathcal{A} = \{\text{Up, Down, Left, Right}\}$. The state space $\mathcal{S}$ is defined by the combination of the agent's spatial position and its current inventory. With 16 accessible grid positions and 4 inventory states (carrying neither object, Banana only, Chicken only, or both), the total state space size is $|\mathcal{S}| = 16 \times 4 = 64$.
+To demonstrate the efficacy of our proposed method, we introduce a novel Grid-World environment termed the ``Chicken-Banana'' problem. The environment layout is illustrated in Figure \ref{fig:chicken_banana_env} and is inspired in the allegory that chickens are much harder to capture than bananas, illustrating skills with different levels of difficulty to be learned present at the same environment. This domain is formulated as a Markov Decision Process (MDP) defined by discrete state and action spaces. The action space $\mathcal{A}$ consists of four discrete movement primitives: $\mathcal{A} = \{\text{Up, Down, Left, Right}\}$. The state space $\mathcal{S}$ is defined by the combination of the agent's spatial position and its current inventory. With 16 accessible grid positions and 4 inventory states (carrying neither object, Banana only, Chicken only, or both), the total state space size is $|\mathcal{S}| = 16 \times 4 = 64$.
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=.75\linewidth]{images/chicken-banana.png}
     \caption{Representation of the ``Chicken-Banana'' Grid-World environment. The agent (blue square) starts at the bottom. The environment contains three reward sources: the Chicken ($C$), the Banana ($B$), and the Gate ($G$). Note that the episode terminates upon reaching the Gate, and the path lengths differ, with $B$ being the closest and $C$ being the furthest.}
+    \includegraphics[width=.5\linewidth]{images/metodologia/chicken-banana.png}
+    \par\medskip\ABNTEXfontereduzida\selectfont\textbf{Source:} Author
     \label{fig:chicken_banana_env}
 \end{figure}
 
@@ -19,8 +21,9 @@ While reaching the Chicken or Banana provides a scalar reward and updates the ag
 
 Notably, the objects are arranged by increasing distance from the starting position in the following order: Banana, Gate, and Chicken. This configuration is designed to demonstrate that a standard Q-Learning agent may fail to discover the Chicken ($+70$) if exploration strategies do not explicitly encourage visiting more distant states before the episode terminates at the Gate. This highlights the issue of premature termination, where an agent may finish the episode without collecting all available rewards.
 
-From an exploration perspective, the Banana represents the most accessible component, followed by the Gate, and finally the Chicken. However, within the \gls{dylam} framework, we eschew terms such as ``easiest'' or ``hardest.'' Instead, we characterize a component as sub-optimal or unoptimized relative to its specific maximum reward vector, $\vec{R}_{\max}$. If stochastic exploration allows the agent to reach the most distant component, \gls{dylam} adapts to optimize the previously neglected components. In the following section, we provide an analysis of how \gls{dylam} modulates the agent's behavior to satisfy the distinct requirements of each reward component.
+From an exploration perspective, the Banana represents the most accessible component, followed by the Gate, and finally the Chicken. However, within the \gls{dylam} framework, we eschew terms such as ``easiest'' or ``hardest.'' Instead, we characterize a component as sub-optimal or unoptimized relative to its specific maximum reward vector, $\vec{R}_{\max}$. If stochastic exploration allows the agent to reach the most distant component, \gls{dylam} adapts to optimize the previously neglected components. In the following section, we provide an analysis of how \gls{dylam} modulates the agent's behavior to satisfy the distinct requirements of each reward component throughout the training.
 
-\subsection{Components development}
+\input{chapters/metodologia/secoes/chicken_banana/reward_dev}
+\input{chapters/metodologia/secoes/chicken_banana/ablation}
 
-As explained before, this environment was developed with the purpose to highlight the prioritization of each component through training time. It is important to remember that the agents developed may not have the same learning 
+Having established an analytical and empirical validation of DyLam and UDC on this controlled toy environment, the following chapter evaluates their performance across a diverse set of Reinforcement Learning benchmarks. These experiments demonstrate that the proposed methods scale to state-of-the-art frameworks while delivering competitive performance and interpretable learning dynamics.

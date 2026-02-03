@@ -1,2 +1,60 @@
-\section{Analysis on Multi-Objectives setups}
+\section{Analysis on Multi-Objectives Environments}
 \label{sec:res_morl}
+
+In this section, we demonstrate DyLam's capabilities in the Pareto-oriented setups introduced in Chapter~\ref{sec:pareto_oriented_setups}. Our analysis focuses on two complementary results: (i) the quality of the approximated Pareto Front, which serves as our primary performance indicator, and (ii) the weight–space exploration dynamics exhibited by state-of-the-art methods.
+
+For comparison, we consider two \gls{morl} algorithms specialized in Pareto Front discovery: Prediction-Guided Multi-Objective Reinforcement Learning (PGMORL)~\cite{pgmorl}\footnote{\url{https://github.com/mit-gfx/PGMORL}} and Generalized Policy Improvement with Linear Support (GPI-LS)~\cite{alegre2023sample}\footnote{\url{https://github.com/LucasAlegre/morl-baselines}}. Because PGMORL was originally designed for continuous-action environments, and to preserve the integrity of its original experimental setting, we apply it only to the MO-HalfCheetah environment.
+
+\begin{figure*}[ht]
+    \centering
+    \caption{Results for the MO-HalfCheetah environment using PGMORL (wine), GPI-LS (yellow), and DyLam (blue). On (a), the traced lines indicate the $R_{\max}$ of each component, with $R_c = 1000 - \text{Control}$.}
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{images/results/pareto/halfcheetah_pareto.pdf}
+        \caption{Achieved Pareto Fronts}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{images/results/pareto/halfcheetah_weights_comparison.pdf}
+        \caption{Explored weight space}
+    \end{subfigure}
+    \par\medskip\ABNTEXfontereduzida\selectfont\textbf{Source:} Author
+
+    \label{fig:res/halfcheetah-pareto-group}
+\end{figure*}
+
+Figures~\ref{fig:res/halfcheetah-pareto-group} and \ref{fig:res/minecart-pareto-group} present the approximated Pareto Fronts for both environments. In the MO-HalfCheetah setting, PGMORL exhibits visually broader coverage, whereas GPI-LS attains higher performance on the ``Run'' component. DyLam, in contrast, positions itself between these behaviors, yielding intermediate values on both axes. This raises a natural question: \textit{how should one quantify what constitutes a good representation of a Pareto Front?} As discussed by~\cite{felten_toolkit_2023}, useful numerical descriptors include the Hypervolume (\textbf{HV}) of the Convex Coverage Set (\gls{ccs}) and the cardinality (number of solutions). Higher HV indicates broader coverage of the objective space, while higher cardinality indicates richer front diversity. Table~\ref{tab:res/pareto/hv-cardinality} reports both metrics.
+\begin{table}[ht]
+\centering
+\caption{Hypervolume and cardinality of the approximated Pareto Fronts for each method in both environments.}
+\begin{tabular}{c|cc|cc|}
+\cline{2-5}
+                                      & \multicolumn{2}{c|}{\textbf{MO-HalfCheetah}}                        & \multicolumn{2}{c|}{\textbf{MineCart}}                              \\ \hline
+\multicolumn{1}{|c|}{\textbf{Method}} & \multicolumn{1}{c|}{\textbf{HV($log_{10}$)}} & \textbf{Cardinality} & \multicolumn{1}{c|}{\textbf{HV($log_{10}$)}} & \textbf{Cardinality} \\ \hline
+\multicolumn{1}{|c|}{\textbf{PGMORL}} & \multicolumn{1}{c|}{12.648}                  & \textbf{354}         & \multicolumn{1}{c|}{-}                       & \textbf{-}           \\ \hline
+\multicolumn{1}{|c|}{\textbf{GPI-LS}} & \multicolumn{1}{c|}{\textbf{13.224}}         & 12                   & \multicolumn{1}{c|}{8.196}                   & \textbf{500}                  \\ \hline
+\multicolumn{1}{|c|}{\textbf{DyLam}}  & \multicolumn{1}{c|}{12.990}                  & 37                   & \multicolumn{1}{c|}{\textbf{8.714}}          & 32                   \\ \hline
+\end{tabular}
+\label{tab:res/pareto/hv-cardinality}
+\end{table}
+
+Examining Figure~\ref{fig:res/halfcheetah-pareto-group} together with Table~\ref{tab:res/pareto/hv-cardinality}, we observe that DyLam effectively combines characteristics of both baselines. As later discussed in Chapter~\ref{sec:res_trad}, DyLam shows strong performance in the ``Final Position'' indicator while maintaining smooth adaptation of the reward weights. This behavior enables DyLam to explore regions of the objective space between $(0, 1000)$ and $(400, 700)$, thereby producing a more continuous, descriptive front. Prior work by~\cite{alegre2023sample} also highlights the complementary strengths of PGMORL and GPI-LS, noting that GPI-LS tends to achieve superior ``Final Position'' values in this environment. Overall, DyLam surpasses PGMORL, approaches the performance of GPI-LS, and provides a richer description of the underlying trade-offs.
+
+\begin{figure}[ht]
+    \centering
+    \caption{Results for the MineCart environment.}
+    \includegraphics[width=\linewidth]{images/results/pareto/minecart_pareto_weights.pdf}
+    \caption{Achieved Pareto Fronts for GPI-LS (orange) and DyLam (blue).}
+    \par\medskip\ABNTEXfontereduzida\selectfont\textbf{Source:} Author
+    \label{fig:res/minecart-pareto-group}
+\end{figure}
+
+
+In the MineCart environment (Figure~\ref{fig:res/minecart-pareto-group}), the situation is reversed. GPI-LS achieves both higher HV and higher-quality visual structure of the Pareto Front. Given that the environment’s performance indicator is itself closely aligned with the true front, this suggests that DyLam can represent certain fronts reasonably well, but is not the preferred choice when accurate Pareto Front reconstruction is the primary goal. More precisely, DyLam’s adaptive weighting induces a non-uniform sampling of the objective space that is driven by learning dynamics rather than geometric Pareto coverage. The weight updates are triggered by relative learning progress of each reward component. As a consequence, objectives that provide higher marginal improvement tend to be emphasized. This creates an implicit curriculum that concentrates training on regions of the front where gradient signal and performance gains are strongest, which typically corresponds to the central, high-density, or high-curvature parts of the Pareto front, not its extremes.
+
+MineCart is a case where the Pareto front is well structured and the scalarized performance indicator used by the benchmark aligns closely with the true trade-off surface. In such a setting, GPI-LS has a structural advantage: it explicitly constructs policies across the weight simplex and performs geometric coverage of the front. DyLam, by contrast, does not attempt to span the simplex. It follows a single adaptive trajectory in weight space, which naturally converges toward regions that maximize joint learning efficiency rather than Pareto coverage.
+
+Figures~\ref{fig:res/halfcheetah-pareto-group} and~\ref{fig:res/minecart-pareto-group} also show the corresponding weight–space explorations. The contrast is clear: DyLam explores the weight simplex almost continuously, producing trajectories that resemble smooth curves rather than sparse samples. In contrast, PGMORL and GPI-LS exhibit more discrete and scattered coverage of the weight space. DyLam’s density reflects its strategy of emphasizing regions associated with the highest cumulative returns given the provided $\vec{R}_{\max}$, explaining why certain regions appear more densely populated in both subfigures.
+
+Overall, the results in this section clarify an essential aspect of the proposed approach: although DyLam draws conceptual inspiration from multi-objective reinforcement learning, particularly in its explicit manipulation of reward components and its weight-adaptation mechanism, it is not designed to operate as a dedicated MORL algorithm. Unlike methods whose primary objective is to approximate a complete and well-structured Pareto front, DyLam does not optimize for Pareto coverage, diversity, or hypervolume. DyLam can describe portions of the Pareto set and occasionally compete with MORL baselines, but its behavior and performance patterns consistently reflect its underlying purpose: an adaptive weighting mechanism intended to improve learning efficiency rather than a full Pareto-oriented optimization framework. Consequently, the MORL benchmarks serve primarily as analytical tools that help expose DyLam’s strengths and limitations, rather than as domains where DyLam aims to excel in absolute terms. Even under this more demanding evaluation regime, DyLam achieves performance levels that are comparable to state-of-the-art MORL methods on the environments considered, while maintaining its primary advantage of inducing an implicit curriculum within a standard single-policy reinforcement learning process.

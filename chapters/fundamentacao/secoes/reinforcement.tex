@@ -1,14 +1,27 @@
 \section{Reinforcement Learning}
 \label{sec:rl}
-Reinforcement learning is the problem of learning how to map situations to actions in order to maximize a numerical reward signal. The learner, often called an \textbf{agent}, must discover which actions yield the highest reward through a process of trial and error. Importantly, these actions do not only influence the immediate reward, but also affect future situations and subsequent rewards~\cite{sutton2018reinforcement}.
 
-This section introduces the fundaments of reinforcement learning, first with the \emph{Markov Decision Process} (MDP), which provides the mathematical foundation for modeling decision-making under uncertainty. Then, we examine two major families of learning algorithms: \emph{value-based methods}, which rely on estimating value functions to derive optimal policies, and \emph{policy gradient methods}, which directly optimize the policy through gradient-based approaches. Together, these subsections provide the theoretical and algorithmic basis necessary to understand and develop reinforcement learning solutions.
+Reinforcement Learning addresses the problem of learning how an autonomous decision-making entity, referred to as an \emph{agent}, should behave when interacting with an \emph{environment} in order to achieve a given objective. This interaction unfolds over discrete time steps. At each time step $t$, the agent observes the current \emph{state} of the environment, denoted by $s_t \in \mathcal{S}$, selects an \emph{action} $a_t \in \mathcal{A}$, and, as a consequence, the environment transitions to a new state $s_{t+1}$ while emitting a scalar \emph{reward} $r_t$ that evaluates the immediate outcome of the agent’s decision~\cite{sutton2018reinforcement}.
 
-\input{chapters/fundamentacao/secoes/reinforcement/mdp}
-\input{chapters/fundamentacao/secoes/reinforcement/bellman}
-\input{chapters/fundamentacao/secoes/reinforcement/monte_carlo}
-\input{chapters/fundamentacao/secoes/reinforcement/td_learning}
-\input{chapters/fundamentacao/secoes/reinforcement/value_based}
-\input{chapters/fundamentacao/secoes/reinforcement/policy_gradient}
-\input{chapters/fundamentacao/secoes/reinforcement/gym}
+The reward signal encodes the task objective and constitutes the only form of direct feedback available to the agent. Importantly, actions influence not only the immediate reward but also future states and subsequent rewards, making reinforcement learning inherently a sequential decision-making problem under uncertainty. The agent must therefore reason about long-term consequences rather than relying solely on instantaneous feedback.
+
+The agent’s behavior is formalized through a \emph{policy}, denoted by $\pi$, which specifies how actions are selected in each state. In stochastic settings, a policy is represented as a conditional probability distribution $\pi(a \mid s)$, whereas in deterministic settings it corresponds to a direct mapping $\mu(s) = a$. The central goal of reinforcement learning is to learn a policy that maximizes the expected cumulative reward over time, commonly referred to as the \emph{return} and denoted by $G$. Thus, RL can be understood as the process of learning a behavior strategy that prescribes how the agent should act in every possible situation it may encounter.
+
+\begin{figure}[ht]
+\centering
+\caption{Agent-environment interaction loop in Reinforcement Learning.}
+\includegraphics[width=0.6\linewidth]{images/fundamentacao/rl/rl-loop.png}
+\par\medskip\ABNTEXfontereduzida\selectfont\textbf{Source:} Author
+\label{fig:rl_loop}
+\end{figure}
+
+To analyze the agent–environment interaction in a principled manner, reinforcement learning problems are commonly embedded within a formal sequential decision-making framework. This framework specifies how the environment responds to the agent’s actions, how rewards are generated, and how future outcomes depend on current decisions. It also establishes the assumptions under which learning and optimization are well defined, such as the dependence of future states on the current state and action rather than on the full interaction history. The precise mathematical structure underlying this framework—together with its associated assumptions and properties—is presented in a dedicated section through the Markov Decision Process formalism. At this stage, it is sufficient to recognize that this abstraction underpins the majority of theoretical results and algorithmic developments in reinforcement learning, providing a common foundation for the methods discussed in the remainder of this chapter.
+
+\input{chapters/fundamentacao/secoes/mdp}
+\input{chapters/fundamentacao/secoes/bellman}
+\input{chapters/fundamentacao/secoes/monte_carlo}
+\input{chapters/fundamentacao/secoes/td_learning}
+\input{chapters/fundamentacao/secoes/value_based}
+\input{chapters/fundamentacao/secoes/policy_gradient}
+% \input{chapters/fundamentacao/secoes/reinforcement/gym}
 

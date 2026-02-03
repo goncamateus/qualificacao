@@ -1,0 +1,47 @@
+\section{Policy Gradient Methods}
+\label{sec:pg}
+
+Policy Gradient (PG) methods constitute a class of reinforcement learning algorithms that represent the agent’s behavior directly through a parameterized policy, without requiring an explicit action-value function for action selection~\cite{sutton1999policy}. Let $\pi_\theta(a \mid s)$ denote a stochastic policy parameterized by $\theta \in \mathbb{R}^n$, which defines the probability of selecting action $a$ in state $s$:
+\[
+\pi(a \mid s, \theta) \doteq \Pr\{A_t = a \mid S_t = s, \theta_t = \theta\}.
+\]
+
+The objective of policy gradient methods is to find policy parameters $\theta$ that maximize a scalar performance measure $J(\theta)$, typically defined as the expected return obtained by following $\pi_\theta$. A common choice is:
+\begin{equation}
+    J(\theta) = \mathbb{E}_{\pi_\theta} \left[ \sum_{t=0}^{\infty} \gamma^t r_{t+1} \right],
+\end{equation}
+where the expectation is taken over trajectories induced by the policy $\pi_\theta$ and the environment dynamics.
+
+Policy gradient methods perform \emph{gradient ascent} on this objective by iteratively updating the policy parameters in the direction of the estimated gradient:
+\begin{equation}
+\label{eq:gradient_ascent}
+    \theta_{t+1} \doteq \theta_t + \alpha \, \widehat{\nabla_\theta J(\theta_t)},
+\end{equation}
+where $\alpha > 0$ is the step size and $\widehat{\nabla_\theta J(\theta_t)}$ is a stochastic estimate of the true gradient. Any algorithm that follows this update principle falls under the policy gradient framework.
+
+The theoretical foundation underlying these methods is given by the \emph{Policy Gradient Theorem}~\cite{sutton1999policy}, which provides an explicit expression for the gradient of $J(\theta)$ without requiring differentiation of the environment dynamics.
+
+\begin{theorem}[Policy Gradient Theorem]
+\label{theo:pg_theorem}
+\begin{gather}
+\begin{split}
+\nabla_\theta J(\pi_\theta)
+&= \int_{\mathcal{S}} p^{\pi}(s)
+    \int_{\mathcal{A}} \nabla_\theta \pi_\theta(a \mid s)
+    Q_\pi(s,a) \, da \, ds \\
+&= \mathbb{E}_{s \sim p^{\pi},\, a \sim \pi_\theta}
+\left[
+\nabla_\theta \log \pi_\theta(a \mid s)\, Q_\pi(s,a)
+\right],
+\end{split}
+\label{eq:pg_theorem}
+\end{gather}
+\end{theorem}
+
+In this expression, $p^{\pi}(s)$ denotes the discounted state visitation distribution induced by policy $\pi_\theta$, and $Q_\pi(s,a)$ is the action-value function under the same policy. The theorem shows that the gradient of the expected return can be computed by weighting the score function $\nabla_\theta \log \pi_\theta(a \mid s)$ by the corresponding action-value, enabling unbiased gradient estimates from sampled trajectories.
+
+Although $Q_\pi(s,a)$ appears in the gradient expression, it is not required for action selection and is often approximated or replaced by alternative signals, such as advantage functions or learned critics. This leads naturally to actor--critic architectures, which combine policy gradient updates with value function approximation.
+
+\input{chapters/fundamentacao/secoes/policy_gradient/ac}
+\input{chapters/fundamentacao/secoes/policy_gradient/dpg}
+\input{chapters/fundamentacao/secoes/policy_gradient/sac}

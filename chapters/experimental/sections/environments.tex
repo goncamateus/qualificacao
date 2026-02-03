@@ -1,0 +1,47 @@
+\section{Reinforcement Learning Benchmarks}
+\label{sec:environments}
+
+In previous chapters, we discussed the relationship between the proposed \gls{rl} framework and both multi-objective decomposition-based learning and traditional single-objective \gls{rl}. Although all environments considered in this work can be formulated within a multi-objective framework, they serve distinct experimental purposes. 
+
+Some environments are explicitly designed to emphasize the construction and analysis of the Pareto front, focusing on the agent’s ability to discover a diverse set of trade-off solutions. Other environments are employed to evaluate the learning dynamics and sample efficiency of the proposed algorithm when dealing with multiple objectives under limited interaction budgets or data constraints. This distinction enables a comprehensive assessment of DyLam from complementary perspectives: one highlighting its capacity to approximate Pareto-optimal solution sets, and another emphasizing its learning efficiency in practical, data-driven scenarios.
+
+\input{chapters/experimental/sections/environments/pareto}
+\input{chapters/experimental/sections/environments/traditional}
+
+\begin{sidewaystable}[ht]
+\centering
+\caption{Summary of learning environments used for evaluating DyLam. Pareto-oriented environments focus on trade-off discovery and Pareto front approximation, while learning-dynamics-oriented environments emphasize convergence behavior and task efficiency.}
+\label{tab:env_summary}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Environment} &
+\textbf{State/Action Space} &
+\textbf{Reward Components} &
+\textbf{Performance Assessment} \\
+\midrule
+
+MO-HalfCheetah &
+Continuous/Continuous &
+Forward velocity, Control cost &
+Pareto front/Final Position\\
+
+MO-Minecart &
+Continuous/Discrete &
+Resource collection ($2$ objectives), Fuel &
+Pareto front\\
+
+Taxi-v3 &
+Discrete/Discrete &
+Energy, Passenger drop-off, Illegal action &
+Passenger drop-off \\
+
+VSS-v0 &
+Continuous/Continuous &
+Move to ball, Ball to goal, Energy &
+Goal-scoring \\
+
+\bottomrule
+\end{tabular}
+\end{sidewaystable}
+
+To facilitate comparison across the different experimental setups, we summarize the key characteristics of all environments considered in this work. The environments differ substantially in terms of state and action spaces, reward decomposition, and evaluation criteria, reflecting the complementary roles they play in assessing DyLam. Pareto-oriented environments emphasize trade-off discovery and coverage of the Pareto front, whereas learning-dynamics-oriented environments focus on convergence behavior, reward prioritization, and sample efficiency under practical constraints. \tref{tab:env_summary} provides a unified overview of these properties.

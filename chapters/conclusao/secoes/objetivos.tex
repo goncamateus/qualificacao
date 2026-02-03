@@ -1,2 +1,18 @@
 \section{Reached Objectives}
 \label{sec:reached_objectives}
+
+This dissertation set out to investigate whether adaptive reward weighting could alleviate the limitations of static scalarization and manual tuning in reinforcement learning problems with known, conflicting reward components. The objectives stated in the introduction are revisited below, together with a summary of how they were addressed.
+
+\begin{itemize}
+    \item \textbf{Comprehensive review of multi- and sub-objective learning frameworks.}  
+    A broad literature review was conducted covering classical multi-objective reinforcement learning, reward decomposition methods, scalarization strategies, and recent adaptive-weight approaches. This review clarified the conceptual distinctions between Pareto-oriented methods and learning-dynamics-oriented formulations, positioning DyLam as a framework inspired by MORL but not restricted to multi-objective optimality. The analysis provided the theoretical grounding necessary to motivate both UDC and DyLam, and to identify open challenges related to reward imbalance and learning instability.
+
+    \item \textbf{Extension of DyLam to discrete state and action spaces.}  
+    Originally conceived for continuous-control settings, DyLam was successfully extended to discrete environments by integrating it with tabular and value-based learning algorithms. Experiments in Taxi and Chicken–Banana demonstrated that the method remains well-defined and effective in discrete domains, preserving its adaptive behavior without relying on function approximation or continuous action policies.
+
+    \item \textbf{Demonstration of effective exploration of the reward-weight space.}  
+    Through controlled experiments in both Pareto-oriented and learning-dynamics-oriented environments, DyLam was shown to actively explore the reward-weight space by adjusting the $\lambda$-weights in response to component-wise learning progress. Visualizations of weight trajectories and cumulative component rewards confirmed that DyLam does not collapse to a fixed scalarization, but instead continuously reshapes the optimization landscape in a principled and interpretable manner.
+
+    \item \textbf{Adaptive prioritization of under-optimized objectives.}  
+    Across all evaluated environments, DyLam consistently prioritized reward components that were lagging behind their expected bounds, while down-weighting those that had already saturated. This mechanism enabled more efficient use of interaction budgets and led to faster convergence on task-relevant performance metrics. The effect was particularly pronounced in environments with stage-dependent or mutually conflicting objectives, such as HalfCheetah and VSS.
+\end{itemize}

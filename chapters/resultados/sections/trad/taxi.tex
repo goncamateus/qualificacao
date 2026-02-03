@@ -1,0 +1,49 @@
+\subsection{Taxi}
+\label{sec:res/trad/taxi}
+
+In the Taxi environment, our primary objective is to analyze the impact of explicitly specifying reward bounds through $\vec{R}_{\max}$ and $\vec{R}_{\min}$, and to understand how DyLam behaves when this prior information is intentionally misaligned with the true task structure. In particular, we define unrealistic bounds for the Illegal Actions component ($R_{\max}=0$, $R_{\min}=-10$), with the expectation that DyLam will initially prioritize successful passenger pick-ups and drop-offs before gradually rebalancing its focus toward the remaining components.
+
+A secondary goal of this experiment is to further evaluate the behavior of UDC in a discrete environment, following the observations made in Chapter~\ref{sec:chickenbanana}. This setting allows us to verify whether the policy-gradient-based formulation of UDC exhibits systematic limitations, while also enabling direct comparison with Q-Decomposition~\cite{russell2003q}, which is naturally applicable in discrete state–action spaces.
+
+Figure~\fref{fig:res/taxi/passenger_dropoff} reports the passenger drop-off rate achieved throughout training. Consistent with the results observed in the Chicken--Banana environment, UDC performs as expected and consistently outperforms Q-Decomposition. However, the Taxi task highlights a more pronounced effect of mis-specified reward bounds: overestimating the importance of the Energy component can significantly hinder learning in the remaining objectives, as both passenger handling and legal action execution inherently require energy expenditure. When compared to a ``$\vec{\lambda}$-tuned'' variant of UDC, the importance of appropriate reward weighting becomes evident, with Tuned-UDC achieving asymptotic performance comparable to that of DyLam.
+
+
+\begin{figure}[ht]
+    \centering
+    \caption{Passenger drop-off rate achieved throughout training in the Taxi environment. Results are averaged over 10 random seed initializations. Solid lines denote the mean performance of each method, while shaded regions indicate the minimum–maximum range across seeds. Comparisons are shown for Q-Learning (baseline), Q-Decomposition, UDC, Tuned-UDC, and DyLam.}
+    \includegraphics[width=.7\textwidth]{images/results/tradicional/taxi/Taxi-v3.pdf}
+    \par\medskip\ABNTEXfontereduzida\selectfont\textbf{Source:} Author
+    \label{fig:res/taxi/passenger_dropoff}
+\end{figure}
+
+~\fref{fig:res/taxi/components-weights} provides a deeper view of DyLam’s internal learning dynamics. The left panel shows the cumulative episode rewards for each component, while the right panel illustrates the evolution of the adaptive $\lambda$-weights over time. Although DyLam achieves superior drop-off performance overall, the component-level analysis reveals a delayed improvement in the Illegal Actions component. This behavior indicates that, despite the early prioritization of passenger-related rewards, the agent initially adopts unstable policies that incur excessive energy consumption and frequent illegal actions.
+
+\begin{figure}[ht]
+    \centering
+    \caption{Reward dynamics and adaptive weight evolution in the Taxi environment over $2{,}000$ training episodes. The Passenger Drop-off component is shown in blue, the Energy component in red, and the Illegal Actions component in green.}
+
+    \begin{subfigure}[t]{0.49\textwidth}
+        \caption{Cumulative episode reward for each component. Dashed horizontal lines indicate the corresponding $\vec{R}_{\max}$ values.}
+        \includegraphics[width=\textwidth]{images/results/tradicional/taxi/Taxi-v3-components.pdf}
+        \label{fig:res/taxi/components}
+    \end{subfigure}
+    \hfill 
+    \begin{subfigure}[t]{0.49\textwidth}
+        \caption{Temporal evolution of the adaptive $\lambda$-weights, illustrating DyLam’s dynamic rebalancing of reward priorities.}
+        \includegraphics[width=\textwidth]{images/results/tradicional/taxi/Taxi-v3-weights.pdf}
+        \label{fig:res/taxi/lambdas}
+    \end{subfigure}
+    \vskip\baselineskip
+    \par\medskip\ABNTEXfontereduzida\selectfont\textbf{Source:} Author
+    \label{fig:res/taxi/components-weights}
+\end{figure}
+
+As training progresses, both the Passenger Drop-off and Energy components approach their respective maxima, effectively shifting the responsibility for action selection toward the Illegal Actions component. This transition is explicitly reflected in the greedy policy (Equation \ref{eq:statlam_policy})
+\[
+\pi_G(s_t) = \arg \max_{a \in \mathcal{A}} \sum_i \lambda_i Q_i(s_t, a),
+\]
+\noindent which increasingly emphasizes legality once the other objectives saturate. This behavior highlights a key characteristic of DyLam: while the method successfully exploits prior reward bounds to accelerate learning, inaccurate specifications of $\vec{R}_{\max}$ and $\vec{R}_{\min}$ can induce transient instability. This phenomenon occurs because DyLam's adaptive weighting mechanism effectively renders the \gls{mdp} non-stationary from the agent's perspective, as the scalarized reward function is constantly modified during the learning process.
+
+A comparison between the Taxi and Chicken–Banana environments highlights a consistent pattern in DyLam’s behavior when operating under biased reward specifications. In both settings, DyLam initially prioritizes components associated with task completion, even when other components are poorly scaled. However, the Taxi domain exposes a more pronounced instability phase compared to the smoother transitions in Chicken–Banana. This difference stems from the tighter coupling between components in Taxi, where energy expenditure and action legality are prerequisites for achieving the primary objective. Despite the initial sensitivity to non-stationarity, DyLam ultimately rebalances the weights in both environments and converges to effective policies without manual retuning. This demonstrates that DyLam is particularly well-suited for scenarios where reward components are known but difficult to balance a priori, as it adaptively manages prioritization across structurally distinct tasks and outperforms both static and decomposition-based baselines.
+
+In summary, the Taxi experiment demonstrates both the strengths and the limitations of DyLam in discrete, multi-component environments. The results confirm that DyLam can exploit prior information encoded in $\vec{R}_{\max}$ and $\vec{R}_{\min}$ to accelerate learning toward task-relevant objectives, even when this information is imperfect. At the same time, the observed instability during early training underscores the sensitivity of adaptive weighting mechanisms to inaccurate reward bounds, particularly in environments where objectives are tightly interdependent. Nevertheless, DyLam consistently recovers from these transient effects and converges to high-performing policies, outperforming both static and decomposition-based baselines. These findings support the broader claim that DyLam is well suited for scenarios in which reward components are known but difficult to balance a priori, and where adaptive prioritization can mitigate the need for extensive manual tuning.

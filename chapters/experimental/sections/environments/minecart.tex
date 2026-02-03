@@ -1,0 +1,23 @@
+
+\subsubsection{Minecart}
+
+The Multi-Objective Minecart (MO-Minecart) environment is a discrete multi-objective benchmark originally introduced in~\cite{abels2019dynamicweightsmultiobjectivedeep}. Since then, it has become a widely adopted testbed for evaluating multi-objective reinforcement learning algorithms~\cite{felten_toolkit_2023}, particularly due to its clear and interpretable trade-offs between competing reward components. An overview of the environment layout is illustrated in \fref{fig:envs/minecart}.
+
+\begin{figure}[ht]
+    \centering
+    \caption{Minecart environment. The agent navigates a 2D space to collect multiple resource types under fuel constraints, inducing conflicting objectives.}
+    \includegraphics[width=.5\textwidth]{images/environments/minecart.png}
+    \par\medskip\ABNTEXfontereduzida\selectfont\textbf{Source:} Author
+    \label{fig:envs/minecart}
+\end{figure}
+
+In Minecart, the agent controls a mining cart operating in a two-dimensional continuous space populated with multiple mines, each associated with a distinct resource type. The agent’s objective is to navigate the environment, collect resources from the mines, and return them to a central depot for processing. The episode terminates once the agent exhausts its fuel budget.
+
+The defining characteristic of the Minecart environment is its inherently conflicting reward structure. Each resource type corresponds to a separate objective, and collecting a greater amount of one resource typically limits the agent’s ability to collect others due to fuel constraints and spatial layout. As a result, the learning problem naturally induces a Pareto front representing different trade-offs among resource collection strategies.
+
+\paragraph{Multi-Objective Reward Function.}
+The reward at each episode is represented by a vector $\vec{r} \in \mathbb{R}^3$, where each dimension corresponds to the cumulative amount of a specific resource successfully delivered to the depot and fuel spent. The maximum and minimum cumulative reward for each component is described by $\vec{R}_{max}=\{1.5, 1.5, 0\}$ and $\vec{R}_{min}=\{0, 0, -20\}$, respectively.
+
+This explicit decomposition of objectives makes Minecart particularly suitable for studying adaptive weighting mechanisms and Pareto front exploration. In contrast to MO-HalfCheetah, Minecart emphasizes long-horizon planning and strategic trade-offs under resource constraints rather than fine-grained motor control.
+
+Due to these properties, Minecart has been extensively used in the MORL literature as a benchmark for evaluating algorithms that aim to balance competing objectives and to recover diverse sets of Pareto-optimal policies~\cite{abels2019dynamicweightsmultiobjectivedeep, alegre2023sample, felten2024multi}. In this work, it serves as a complementary Pareto-oriented environment, enabling a clear analysis of DyLam’s ability to adaptively prioritize objectives and explore the Pareto front in a structured and interpretable setting.

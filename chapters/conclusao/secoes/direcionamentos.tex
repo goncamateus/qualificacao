@@ -1,2 +1,39 @@
 \section{Future Directions}
 \label{sec:future}
+
+Although the results presented in this work demonstrate the effectiveness of DyLam across a range of environments, several promising research directions remain open and constitute a coherent agenda for future investigation.
+
+\begin{itemize}
+    \item \textbf{Real-world robotic applications.}  
+    Given its strong performance in simulated robotic environments, DyLam is a promising candidate for real-world deployment, where objectives such as energy efficiency, safety, and task performance must be balanced under limited interaction budgets. This research direction can be decomposed into four milestones suitable for a publication: (i) an analysis of the sim-to-real gap in robotic soccer environments such as rSoccer~\cite{rsoccer}; (ii) benchmarking DyLam against state-of-the-art methods in simulation; (iii) investigating DyLam’s ability to reduce the sim-to-real gap with a focus on energy efficiency; and (iv) experimental validation on real rSoccer robotic platforms~\cite{rsoccer}.
+
+    \item \textbf{Extension to partially observable and multi-agent settings.}  
+    Extending DyLam to partially observable environments and multi-agent systems introduces additional sources of non-stationarity and coordination complexity. Investigating whether adaptive reward prioritization can mitigate these challenges represents a natural next step. This research direction can be organized into three milestones toward publication: (i) implementation and evaluation of DyLam in partially observable settings, with a focus on non-stationarity arising from partial information; (ii) extension of DyLam to multi-agent environments; and (iii) a comparative analysis of convergence properties and stability in multi-agent scenarios, leveraging established benchmarks such as PettingZoo~\cite{terry2021pettingzoo}.
+    
+    % \item \textbf{Automatic estimation of reward bounds.}  
+    % DyLam currently relies on user-specified reward bounds, namely $\vec{R}_{\max}$ and $\vec{R}_{\min}$. Future work may focus on learning or adapting these bounds online, thereby reducing dependence on domain expertise and further automating reward specification. This research direction can be structured into two main milestones with the goal of producing a standalone publication: (i) a comprehensive literature review on online reward normalization and bound estimation methods; and (ii) the design and evaluation of algorithms for online adaptation of $\vec{R}_{\max}/\vec{R}_{\min}$ within the DyLam framework.
+
+    \item \textbf{Integration with Pareto-front approximation methods.}  
+    Although DyLam is not explicitly designed as a Multi-Objective Reinforcement Learning (MORL) method, its adaptive reward-weighting mechanism is conceptually complementary to Pareto-front approximation approaches. Integrating DyLam with MORL techniques may lead to hybrid methods that combine dynamic learning curricula with explicit trade-off exploration among objectives~\cite{pgmorl,alegre2023sample,ropke-ipro}. This scope can be divided into three milestones aimed at a publishable contribution: (i) an in-depth study of MORL-based integration strategies, including methods such as PGMORL and CAPQL~\cite{pgmorl,capql}; (ii) modifications to DyLam’s weighting mechanism to explicitly encourage trade-off exploration; and (iii) extensive benchmarking against state-of-the-art MORL algorithms.
+
+\end{itemize}
+
+Although an extended abstract introducing DyLam has already been published~\cite{machado2025dylam}, we plan to submit a comprehensive journal article that presents the full theoretical formulation, algorithmic details, and extensive empirical evaluation of the DyLam framework. Potential target venues for this submission include well-established journals such as \emph{IEEE Transactions on Pattern Analysis and Machine Intelligence}, \emph{Neurocomputing}, and the \emph{Journal of Machine Learning Research}.
+
+Furthermore, Table~\ref{tab:thesis_timeline} presents a 12-month research roadmap for the completion of the Doctorate degree. The proposed timeline emphasizes the writing phase of each planned scientific contribution and aligns estimated submission periods with high-impact conferences, including the Conference on Robot Learning (CoRL), the Annual Conference on Neural Information Processing Systems (NeurIPS), the AAAI Conference on Artificial Intelligence (AAAI), and the International Conference on Autonomous Agents and Multiagent Systems (AAMAS).
+
+
+\begin{table}[ht]
+    \centering
+    \caption{12-Month Research Plan and Thesis Completion Roadmap.}
+    \label{tab:thesis_timeline}
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|c|}
+\hline
+Project\textbackslash{}Month      & \textbf{1}               & \textbf{2}               & \textbf{3}               & \textbf{4}               & \textbf{5}               & \textbf{6}               & \textbf{7}               & \textbf{8}                                    & \textbf{9}                                    & \textbf{10}                                   & \textbf{11}              & \textbf{12}              \\ \hline
+\textbf{Real-world Robotics}      & \cellcolor[HTML]{000000} & \cellcolor[HTML]{000000} & \cellcolor[HTML]{000000} & \cellcolor[HTML]{FFFFFF} &                          &                          &                          &                                               &                                               &                                               &                          &                          \\ \hline
+\textbf{POMDP \& Multi-agent}     &                          &                          & \cellcolor[HTML]{000000} & \cellcolor[HTML]{000000} & \cellcolor[HTML]{000000} &                          &                          &                                               &                                               &                                               &                          &                          \\ \hline
+\textbf{DyLam Core}               & \cellcolor[HTML]{000000} & \cellcolor[HTML]{000000} & \cellcolor[HTML]{FFFFFF} & \cellcolor[HTML]{000000} & \cellcolor[HTML]{000000} & \cellcolor[HTML]{000000} & \cellcolor[HTML]{000000} & \cellcolor[HTML]{000000}                      &                                               &                                               &                          &                          \\ \hline
+\textbf{Pareto-front Integration} & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{\cellcolor[HTML]{000000}} & \multicolumn{1}{l|}{\cellcolor[HTML]{000000}} & \multicolumn{1}{l|}{\cellcolor[HTML]{000000}} & \multicolumn{1}{l|}{}    & \multicolumn{1}{l|}{}    \\ \hline
+\textbf{Dissertation Compilation} &                          &                          &                          & \cellcolor[HTML]{FFFFFF} & \cellcolor[HTML]{FFFFFF} & \cellcolor[HTML]{000000} & \cellcolor[HTML]{000000} &                                               &                                               &                                               & \cellcolor[HTML]{000000} & \cellcolor[HTML]{000000} \\ \hline
+\end{tabular}
+\end{table}

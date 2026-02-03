@@ -15,14 +15,35 @@ A well-known toy example that captures the essence of reinforcement learning is 
 
 Notably, the Mountain Car example illustrates several fundamental aspects of the \gls{rl} process. Central to reinforcement learning is the \emph{interaction} between an \emph{agent} and its learning \emph{environment}, where the agent aims to achieve a specific \emph{objective} despite facing \emph{uncertainty} about how its actions will influence future outcomes. In this case, the agent can choose to accelerate left or right, which directly affects its current and future \emph{state}s. These decisions not only impact immediate progress but also determine the set of options available at subsequent steps. For instance, accelerating in the wrong direction at the wrong time may prevent the agent from gaining enough momentum to reach the goal, illustrating how delayed consequences and strategic decision-making are crucial to successful learning.
 
-To learn effectively in such environments, an agent relies on several core components. The \emph{policy} defines the agent’s behavior by mapping each \emph{state} to a specific action or a probability distribution over actions. It is essentially the agent's strategy for deciding what to do at each step. In some cases, the agent may also use a \emph{model of the environment}, which attempts to predict the next state and reward given the current state and action. These elements work together to help the agent improve its behavior over time, balancing immediate rewards with long-term gains~\cite{sutton2018reinforcement}.
+To operate in such environments, an agent relies on a set of core components. The \emph{policy}, denoted by $\pi(a \mid s)$ or $\mu(s)$ in deterministic settings, defines the agent’s behavior by mapping states to actions. In some cases, the agent may also leverage a \emph{model of the environment} to predict state transitions. However, in sparse-reward problems such as Mountain Car, effective learning depends less on immediate feedback and more on the agent’s ability to infer which sequences of actions eventually lead to success~\cite{sutton2018reinforcement}.
 
-In this work, our main contributions encompass two other core features, \emph{rewards} and \emph{value functions}, therefore it is important to understand their role in the learning process and distinguish them, despite the relation between them. The reward is a scalar signal received from the environment, providing immediate feedback on the desirability of an action taken in a given state. It is the most direct form of supervision in reinforcement learning, guiding the agent moment by moment. In contrast, the value function estimates the long-term expected return—typically defined as the cumulative sum of future rewards—starting from a given state or state-action pair and following a particular policy~\cite{sutton2018reinforcement}.
+In this work, we focus on two additional and central components of reinforcement learning: \emph{rewards} and \emph{value functions}. The reward, denoted by $r_t = R(s_t, a_t, s_{t+1})$, is a scalar signal provided by the environment that evaluates the immediate desirability of a transition. In contrast, value functions estimate long-term performance. The state-value function $V^\pi(s)$ represents the expected return when starting from state $s$ and following policy $\pi$, while the action-value function $Q^\pi(s,a)$ estimates the expected return after taking action $a$ in state $s$ and subsequently following $\pi$~\cite{sutton2018reinforcement}.
 
-While rewards define what is desirable, value functions inform the agent of how desirable different states or actions are in terms of future potential. This distinction is crucial: an agent may not learn effective behavior by relying solely on immediate rewards, especially in environments with delayed or sparse feedback. Instead, by learning accurate value functions, the agent can anticipate future outcomes and make informed decisions that balance short-term sacrifices for long-term gains. The design of reward signals and the estimation of value functions are thus deeply interconnected and central to the success of any reinforcement learning approach~\cite{ng1999policy}.
+While rewards specify \emph{what} is desirable, value functions quantify \emph{how desirable} states or actions are in terms of future outcomes. This distinction is particularly important in environments with delayed rewards, where immediate feedback provides little guidance. In such cases, learning accurate value functions enables the agent to reason about long-term consequences and to select actions that may appear suboptimal in the short term but are necessary for eventual success~\cite{ng1999policy}.
 
 Reward shaping has been introduced as a technique to mitigate this issue by augmenting the environment's reward signal with additional, informative feedback. These auxiliary signals correspond to sub-tasks or intermediate objectives that the agent must achieve en route to accomplishing the primary task \cite{ng1999policy}. Each reward component contributes a weighted term to the final reward function, with the relative importance of each component governed by a set of weights, denoted as $\lambda$.
 
 These weights play a pivotal role in defining the agent’s learning trajectory. They encode a static curriculum that implicitly guides the agent’s behavior by emphasizing certain aspects of the task over others throughout training \cite{curriculum}. However, selecting appropriate weightings is non-trivial. Improperly balanced reward components may lead the agent to overfit to simpler sub-tasks while neglecting critical, but harder-to-learn, behaviors.
 
 Consider, for example, a simulated soccer environment in which the agent’s ultimate goal is to score goals. To reach this objective, it must first acquire skills such as moving toward the ball, dribbling, and shooting. A well-designed curriculum would initially encourage the development of basic motor control and ball handling before shifting focus toward higher-level strategic actions like shooting. If the reward structure overemphasizes early-stage sub-skills and underweights goal-scoring, the agent may converge to policies that excel at ball possession but never learn to score.
+
+Importantly, such multi-reward formulations are not limited to explicitly multi-objective benchmarks. Table~\ref{tab:gym_multi_reward} provides an overview of representative environments that incorporate multiple reward components—either explicitly or implicitly—highlighting that a significant fraction of commonly used benchmarks already rely on composite reward structures.
+
+\begin{table}[h]
+\centering
+\caption{Examples of Gymnasium environments with multiple reward components.}
+\label{tab:gym_multi_reward}
+\begin{tabular}{l l l}
+\toprule
+Environment & Domain & Reward Components \\
+\midrule
+MountainCar & Control & Goal achievement, time penalty \\
+LunarLander & Control & Stability, fuel usage, landing success \\
+BipedalWalker & Locomotion & Forward motion, balance, energy cost \\
+MuJoCo Environments & Control/Locomotion & Velocity, control cost \\
+rSoccer Environments & Multi-agent & Scoring, positioning, control cost \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+These examples illustrate that even widely adopted benchmark environments frequently encode multiple objectives within their reward functions, reinforcing the need for principled methods capable of dynamically balancing and prioritizing reward components during learning.

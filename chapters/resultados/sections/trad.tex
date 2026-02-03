@@ -1,2 +1,9 @@
-\section{Analysis on traditional Reinforcement Learning setups}
+\section{Analysis on Traditional Reinforcement Learning Setups}
 \label{sec:res_trad}
+
+In this section, we examine the learning performance of DyLam and UDC within environments whose primary purpose is not Pareto-front discovery, but rather the assessment of learning dynamics, policy quality, and the impact of reward decomposition in conventional single-policy reinforcement learning setups. We begin by revisiting the HalfCheetah environment from a traditional scalar-reward perspective—where the central question becomes how effectively each method can learn a high-performing forward-locomotion policy under dense, continuous control. We then analyze two additional environments, Taxi-v3 and VSS-v0, both of which emphasize the role of structured reward components, bounded reward scales, and learned curricula. Together, these environments allow us to isolate the contributions of DyLam’s adaptive weighting mechanism in scenarios that focus on sample efficiency and final task performance rather than Pareto optimality, thereby complementing the findings presented in Section~\ref{sec:res_morl}.
+
+
+\input{chapters/resultados/sections/trad/halfcheetah}
+\input{chapters/resultados/sections/trad/taxi}
+\input{chapters/resultados/sections/trad/vss}

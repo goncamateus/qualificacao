@@ -3,16 +3,13 @@
 
 In this chapter, we present and discuss the results obtained with the proposed methods. We begin by describing the training environments used to evaluate the algorithms, providing the necessary context for interpreting their performance. The results are then analyzed from two complementary perspectives. First, we examine the performance of all algorithms in \gls{morl} setups. Next, we compare DyLam’s learning dynamics with those of traditional \gls{rl} methods, highlighting the differences in how each approach adapts during training.
 
-To assess the algorithms in the MORL context, we relied on a well-established benchmark repository for \gls{morl}~\cite{felten_toolkit_2023}, which includes implementations of several methods introduced in Section~\ref{sec:related}. Notably, many of the authors of these original methods have also contributed to the repository, increasing the credibility and reproducibility of the results reported here. For the experiments involving traditional methods, we adapted another recognized benchmark framework~\cite{huang2022cleanrl}, extending it to support the decomposition of value functions and reward components required by our analysis.
+To assess the algorithms in the MORL context, we relied on a well-established benchmark repository for \gls{morl}~\cite{felten_toolkit_2023}, which includes implementations of several methods introduced in Chapter~\ref{chap:related}. Notably, many of the authors of these original methods have also contributed to the repository, increasing the credibility and reproducibility of the results reported here. For the experiments involving traditional methods, we adapted another recognized benchmark framework~\cite{huang2022cleanrl}, extending it to support the decomposition of value functions and reward components required by our analysis.
 
 This chapter is organized as follows.
-Section~\ref{sec:environments} introduces the environments used in the experiments, describing their specific characteristics and the aspects most relevant to each evaluation.
 Section~\ref{sec:res_morl} presents and analyzes the results obtained in the \gls{morl} setups, comparing the proposed methods with both existing multi-objective approaches and traditional \gls{rl} baselines.
 Section~\ref{sec:res_trad} focuses on the experiments with traditional methods, highlighting how DyLam’s learning process differs from conventional reinforcement learning techniques.
 
 Together, these analyses provide a comprehensive view of the effectiveness and adaptability of the proposed methods across different problem settings.
 
-
-\input{chapters/resultados/sections/environments}
 \input{chapters/resultados/sections/morl}
 \input{chapters/resultados/sections/trad}

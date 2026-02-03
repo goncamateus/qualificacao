@@ -1,5 +1,13 @@
 \chapter{Conclusion}
 \label{chap:conclusion}
 
+This work investigated how structured reward decomposition and adaptive reward weighting can be leveraged to improve learning stability and performance in reinforcement learning environments with known, yet conflicting, reward components. Motivated by the limitations of static reward aggregation and manual weight tuning, we studied two complementary approaches: UDC, which decomposes the action-value function into component-wise critics, and DyLam, which dynamically adapts the relative importance of reward components throughout training.
+
+Across a diverse set of environments—ranging from discrete tabular domains to continuous-control and robotic scenarios—our experiments highlighted both the strengths and limitations of decomposition-based methods. UDC consistently behaved as expected in discrete environments with well-aligned objectives, often matching or surpassing traditional baselines and confirming the soundness of its theoretical motivation. However, its performance proved sensitive to learning dynamics and action-space continuity, revealing practical gaps when scaling beyond controlled settings.
+
+In contrast, DyLam demonstrated robust and consistent performance across all evaluated environments, particularly in scenarios characterized by strong or stage-dependent reward conflicts. Rather than seeking multi-objective optimality in the Pareto sense, DyLam reshaped the learning process itself by dynamically prioritizing reward components over time. This behavior led to the emergence of implicit curricula, enabling agents to acquire task-level objectives after learning simpler, \emph{in exploration terms}, sub-tasks. The empirical results in HalfCheetah, Taxi, and especially VSS underscore DyLam’s ability to stabilize learning and reduce reliance on manual reward engineering.
+
+Together, these findings suggest that adaptive reward weighting constitutes a practical and effective mechanism for orchestrating learning progress in complex reinforcement learning problems. The remainder of this chapter summarizes the objectives achieved by this work and outlines promising directions for future research.
+
 \input{chapters/conclusao/secoes/objetivos}
 \input{chapters/conclusao/secoes/direcionamentos}

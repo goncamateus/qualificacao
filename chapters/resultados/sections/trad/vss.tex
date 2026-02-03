@@ -1,0 +1,37 @@
+\subsection{VSS}
+\label{sec:res/trad/vss}
+
+The VSS experiment can be understood as a synthesis of the challenges posed by the previous environments. As discussed in prior work~\cite{rsoccer}, this environment has historically been difficult due to the sensitivity of performance to reward-weight selection. Similar to HalfCheetah and Taxi, VSS includes an explicitly conflicting ``Energy'' component. At the same time, it introduces the ``Move-to-Ball'' and ``Ball-to-Goal'' components, which are only partially aligned. While the agent can attempt to shoot directly at the goal, approaching the ball is often a prerequisite for successful scoring. However, optimizing ``Move-to-Ball'' alone may lead to degenerate behaviors, such as repeatedly orbiting the ball without producing goal-directed actions, resulting in high cumulative ``Move-to-Ball'' rewards but a null ``Ball-to-Goal'' return. Consequently, depending on the learning stage, all three components may become mutually conflicting, making VSS the most challenging environment considered in this work.
+
+\begin{figure}[ht]
+    \centering
+    \caption{Goal rate achieved by the agent throughout training in the VSS environment. Results are averaged over 10 random seed initializations. Solid lines represent the mean performance of each method, while the shaded regions indicate the minimum–maximum range across seeds. Comparisons are shown for SAC (baseline), UDC, Tuned-UDC, and DyLam.}
+    \includegraphics[width=.7\textwidth]{images/results/tradicional/vss/VSS-v0.pdf}
+    \par\medskip\ABNTEXfontereduzida\selectfont\textbf{Source:} Author
+    \label{fig:res/vss/goal}
+\end{figure}
+
+The goal rate achieved by each method is reported in Figure~\fref{fig:res/vss/goal}. Notably, DyLam is the only approach capable of consistently learning a policy that achieves non-zero goal rates within $5 \times 10^{5}$ training steps. In contrast, Tuned-UDC—using the same reward weights reported in~\cite{rsoccer}—reaches approximately half of DyLam’s final performance. It is important to emphasize that, following the experimental protocol adopted for HalfCheetah and Taxi, we deliberately removed the hand-tuned reward weights used in the original formulation of this environment~\cite{rsoccer}. This design choice accounts for the discrepancy between the baseline performance observed here and the results reported in the original work.
+
+A particularly compelling aspect of DyLam’s behavior is the emergence of a learning progression that closely mirrors human intuition on curriculum learning, as illustrated in \fref{fig:res/vss/components}. Initially, the agent focuses on efficiently approaching the ball while minimizing energy expenditure. Only after mastering this prerequisite behavior does it begin to consistently direct the ball toward the goal. The adaptive prioritization mechanism shown in \fref{fig:res/vss/lambdas} further suggests that the upper bounds $R_{\max}$ for the ``Move-to-Ball'' and ``Ball-to-Goal'' components could potentially be relaxed, as their $\lambda$-weights converge to similar values and their cumulative episode rewards exhibit comparable scales.
+
+\begin{figure}[ht]
+    \centering
+    \caption{Reward dynamics and adaptive weight evolution in the VSS environment over $500{,}000$ training steps. The Ball-to-Goal component is shown in blue, the Move-to-Ball component in red, and Energy in green.}
+    \begin{subfigure}[t]{0.49\textwidth}
+        \caption{Cumulative episode reward for each component. Dashed horizontal lines indicate the corresponding $\vec{R}_{\max}$ values.}
+        \includegraphics[width=\textwidth]{images/results/tradicional/vss/VSS-v0-components.pdf}
+        \label{fig:res/vss/components}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.49\textwidth}
+        \caption{Temporal evolution of the adaptive $\lambda$-weights, illustrating DyLam’s dynamic rebalancing of reward priorities throughout training.}
+        \includegraphics[width=\textwidth]{images/results/tradicional/vss/VSS-v0-weights.pdf}
+        \label{fig:res/vss/lambdas}
+    \end{subfigure}
+    \vskip\baselineskip
+    \par\medskip\ABNTEXfontereduzida\selectfont\textbf{Source:} Author
+    \label{fig:res/vss/components-weights}
+\end{figure}
+
+In summary, the VSS experiment constitutes the most demanding scenario evaluated in this work and provides the strongest empirical motivation for DyLam. Unlike Taxi and Chicken--Banana, all reward components in VSS become conflicting at different phases of learning, rendering manual reward-weight tuning particularly fragile. While Tuned-UDC can achieve reasonable performance when equipped with carefully selected static weights, its effectiveness critically depends on prior knowledge of the task structure and on a precise alignment between these weights and the current learning stage. In contrast, DyLam resolves this tension by dynamically reshaping reward priorities over time, enabling the agent to first acquire prerequisite skills before progressively emphasizing goal-directed behavior. This emergent curriculum—clearly reflected in both the component-wise reward evolution and the adaptive $\vec{\lambda}$ dynamics—arises without manual intervention and was not observed in any baseline or tuned variant, highlighting DyLam’s robustness in settings with stage-dependent and mutually conflicting objectives.

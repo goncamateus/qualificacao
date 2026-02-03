@@ -1,0 +1,67 @@
+\subsection{Reward Components Development}
+
+As previously discussed, this environment was designed to explicitly expose how each reward component is prioritized throughout the training process. It is important to emphasize that an agent’s learning dynamics do not necessarily align with human intuition. In this experimental setup, the reward weight vector $\vec{R}$ was allowed to vary from $\vec{0}$ up to $\vec{R}_{\max}=\{30, 70, 100\}$. The DyLam replay buffer size was set to $E=10$, with a smoothing factor of $\tau_\lambda=0.995$. Exploration followed an $\epsilon$-greedy decay strategy, with $\epsilon$ decreasing from $1$ to $0.05$ using a per-episode decay factor of $0.9988$. The performance of the proposed methods is compared against baseline approaches in \fref{fig:meth/rew_chicken_banana}.
+
+\noindent
+\begin{figure}[ht]
+\caption{Reward components development and cumulative reward performance comparison on Chicken-Banana environment during 2000 training episodes. The cumulative episode reward of each component is normalized according to $\vec{R}_{max}=\{30,70,100\}$. The results are the mean of 10 random seeds and using $\epsilon$-greedy decay algorithm. Solid lines represent the mean performance of each method, while the shaded regions indicate the minimum–maximum range across seeds. Comparisons are shown for Q-Learning (baseline), Q-Decomp (baseline), UDC, and DyLam.}
+\centering
+\begin{subfigure}[b]{.49\textwidth}
+    \centering
+    \caption{Banana component training development.}
+    \includegraphics[width=\textwidth]{images/metodologia/res/reward-banana.pdf}
+    \label{fig:meth/rew_chicken_banana-a}
+\end{subfigure}
+\begin{subfigure}[b]{.49\textwidth}
+    \centering
+    \caption{Chicken component training development.}
+    \includegraphics[width=\textwidth]{images/metodologia/res/reward-chicken.pdf}
+    \label{fig:meth/rew_chicken_banana-b}
+\end{subfigure}
+\begin{subfigure}[b]{.49\textwidth}
+    \centering
+    \caption{Gate component training development.}
+    \includegraphics[width=\textwidth]{images/metodologia/res/reward-gate.pdf}
+    \label{fig:meth/rew_chicken_banana-c}
+\end{subfigure}
+\begin{subfigure}[b]{.49\textwidth}
+    \centering
+    \caption{Cumulative episode reward.}
+    \includegraphics[width=\textwidth]{images/metodologia/res/reward-total.pdf}
+    \label{fig:meth/rew_chicken_banana-d}
+\end{subfigure}
+\par\medskip\ABNTEXfontereduzida\selectfont\textbf{Source:} Author
+\label{fig:meth/rew_chicken_banana}
+\end{figure}
+
+Notably, DyLam is the only method that consistently learns to collect all objects before terminating the episode. Although no explicit time-penalty component is defined, the remaining methods fail to identify trajectories that include the Chicken. Once the agent reaches the Chicken, these methods are unable to subsequently reach the Gate objective, resulting in a lower cumulative episode reward and making the Chicken collection behavior unattractive under their respective learning dynamics.
+
+When comparing UDC to the static-weight baselines, an early emergence of the Banana component is observed under UDC that does not occur in standard Q-Learning. This difference follows directly from how bootstrap targets are constructed. In standard decomposed Q-learning, each component is updated independently according to Equation \ref{eq:zimdars_original}:
+\[
+Q_i(s_t,a_t)\leftarrow r_i(s_t,a_t,s_{t+1}) + \gamma \max_{a} Q_i(s_{t+1},a),
+\]
+so the Banana component can only propagate value along trajectories that are optimal for Banana itself. If reaching the Banana requires temporarily sacrificing progress on other components such as the Gate or Chicken, this value signal is suppressed and fails to propagate backward.
+
+In contrast, UDC uses the globally greedy policy $\pi_G$ to select the bootstrap action (Equation \ref{eq:realistic_component_update}), 
+\[
+Q_i(s_t,a_t)\leftarrow r_i(s_t,a_t,s_{t+1}) + \gamma Q_i\!\bigl(s_{t+1},\pi_G(s_{t+1})\bigr),
+\]
+which couples all components through a shared decision rule. As a result, even if a trajectory toward the Banana is not locally optimal for the Banana component alone, it is still reinforced whenever it remains globally optimal with respect to the sum of all components. In particular, trajectories that reach the Banana while still allowing the agent to subsequently reach the Gate receive positive backup signals. This mechanism enables sparse Banana-reaching events to accumulate value early in training, explaining the behavior observed in Figures~\ref{fig:meth/rew_chicken_banana-a} and~\ref{fig:meth/rew_chicken_banana-c}.
+
+
+For the Q-Decomposition method, each reward component is learned at different stages of training; however, the agent fails to learn policies that achieve all objectives simultaneously. This limitation is likely due to the locally optimal and potentially misleading updates induced by independent component learning, which hinder coordinated multi-objective behavior.
+
+\noindent
+\begin{figure}[ht]
+\caption{Cumulative Episode Reward (\textbf{CER}) and the evolution of the adaptive $\lambda$-weights for each reward component in the Chicken–Banana environment over 2000 training episodes.}
+\centering
+\includegraphics[width=\textwidth]{images/metodologia/res/reward-lambda-dylam.pdf}
+\par\medskip\ABNTEXfontereduzida\selectfont\textbf{Source:} Author
+\label{fig:meth/lambdas_chicken_banana}
+\end{figure}
+
+Figure~\fref{fig:meth/lambdas_chicken_banana} illustrates the evolution of the $\lambda$-weights throughout training for DyLam. Notably, the Chicken component receives a substantially higher prioritization due to its poor initial performance, maintaining approximately $75\%$ of the total weight. In contrast, the Banana and Gate components are learned relatively quickly—within roughly the first 200 episodes, allowing DyLam to progressively down-weight them and redirect learning capacity toward the more challenging Chicken objective.
+
+Between approximately 250 and 1250 training episodes, DyLam exhibits less stable learning dynamics when compared to the other methods shown in \fref{fig:meth/rew_chicken_banana}. This behavior arises because the greedy policy $\pi_G(s_t)$ increasingly selects actions that prioritize reaching the Chicken. Consequently, even though the agent has already learned reliable policies for reaching the Banana and the Gate, it continues to favor trajectories that attempt to improve the underperforming Chicken component. As the frequency of successful Chicken-reaching episodes increases—particularly between 1000 and 1250 episodes—the learning process stabilizes, and the agent eventually converges to collecting all objects in every episode.
+
+When inspecting DyLam’s update mechanism, one might initially perceive that the adaptive weight vector $\vec{\lambda}$ varies more aggressively than suggested by Theorem~\ref{theo:dyl_pg_theo}. However, this apparent discrepancy is explained by the buffer size $E=10$, which enforces that the same $\vec{\lambda}$ is applied for ten consecutive $Q$-function updates. When an update to $\vec{\lambda}$ does occur, it retains $99.5\%$ of its previous value due to the smoothing factor $\tau_\lambda=0.995$, resulting in gradual yet perceptible shifts in prioritization.

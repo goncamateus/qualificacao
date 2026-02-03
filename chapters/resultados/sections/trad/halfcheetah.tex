@@ -1,0 +1,41 @@
+\subsection{HalfCheetah}
+\label{sec:res/trad/halfcheetah}
+
+In the HalfCheetah environment, performance is assessed using the \emph{final position} achieved by the agent at the end of each episode, which directly reflects its forward locomotion capability. Figure~\fref{fig:res/halfcheeetah/final_pos} reports the learning curves obtained using Soft Actor-Critic (SAC)~\cite{sac} as a single-objective baseline, together with the proposed DyLam and UDC methods. Due to the continuous nature of the action space, Q-Decomposition~\cite{russell2003q} is not applicable in this setting.
+
+\begin{figure}[ht]
+    \centering
+    \caption{Final position achieved by the agent throughout training in the HalfCheetah environment. Results are averaged over 10 random seed initializations. Solid lines represent the mean performance of each method, while the shaded regions indicate the minimum–maximum range across seeds. Comparisons are shown for SAC (baseline), UDC, and DyLam.}
+    \includegraphics[width=.7\textwidth]{images/results/tradicional/halfcheetah/HalfCheetah-v4.pdf}
+    \par\medskip\ABNTEXfontereduzida\selectfont\textbf{Source:} Author
+    \label{fig:res/halfcheeetah/final_pos}
+\end{figure}
+
+The results indicate that UDC does not achieve the expected performance, failing to consistently match or surpass the SAC baseline. Moreover, UDC exhibits high variance throughout training, suggesting unstable learning dynamics in this environment. This behavior highlights the sensitivity of static or poorly adapted weighting strategies when applied to continuous-control tasks with strongly conflicting objectives.
+
+In contrast, DyLam demonstrates robust and consistent performance both during training and at convergence. When compared to SAC, DyLam maintains a superior final-position performance across the entire learning horizon. This behavior can be explained by the adaptive evolution of the reward weights, shown in Figure~\fref{fig:res/halfcheetah/components-weights}. In particular, after the completion of the initial buffer period ($E=500$ episodes), the Control component receives negligible weight, allowing the Run component to develop rapidly during the early stages of learning. As training progresses, the weights gradually rebalance, leading both components to converge toward comparable contributions.
+
+\begin{figure}[ht]
+    \centering
+    \caption{Reward dynamics and adaptive weight evolution in the HalfCheetah environment over $500{,}000$ training steps. The Control component is shown in blue, while the Run component is shown in red.}
+
+    \begin{subfigure}[t]{0.49\textwidth}
+        \caption{Cumulative episode reward for each component. Dashed horizontal lines indicate the corresponding $\vec{R}_{\max}$ values.}
+        \includegraphics[width=\textwidth]{images/results/tradicional/halfcheetah/HalfCheetah-v4-components.pdf}
+        \label{fig:res/halfcheeetah/components}
+    \end{subfigure}
+    \hfill 
+    \begin{subfigure}[t]{0.49\textwidth}
+        \caption{Temporal evolution of the adaptive $\lambda$-weights, illustrating DyLam’s dynamic rebalancing of reward priorities throughout training.}
+        \includegraphics[width=\textwidth]{images/results/tradicional/halfcheetah/HalfCheetah-v4-weights.pdf}
+        \label{fig:res/halfcheeetah/lambdas}
+    \end{subfigure}
+    \vskip\baselineskip
+    \par\medskip\ABNTEXfontereduzida\selectfont\textbf{Source:} Author
+    \label{fig:res/halfcheetah/components-weights}
+\end{figure}
+
+Interestingly, the evolution of $\vec{\lambda}$ exhibits greater variability than might be anticipated from the theoretical analysis presented in Chapter~\ref{sec:dylam}, despite the relatively large values of both $E$ and $\tau_\lambda$. Nevertheless, this variability does not destabilize learning; instead, both reward components evolve smoothly and converge in a stable manner.
+
+The objective of this experiment was twofold: first, to evaluate whether UDC could at least recover baseline-level performance in a setting with fully conflicting reward components, and second, to assess DyLam’s behavior under such conditions. While UDC struggles to achieve stable performance, DyLam rapidly adapts the reward weights and consistently learns high-quality policies. These results indicate that even in highly dynamic and conflicting reward scenarios, DyLam is capable of identifying effective weighting schedules and converging to stable policies with strong empirical performance.
+

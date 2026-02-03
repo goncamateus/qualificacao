@@ -1,0 +1,124 @@
+\section{Value-Based Methods}
+\label{sec:value_based}
+
+Value-based methods in \gls{rl} are a class of algorithms that estimate the long-term utility of state-action pairs through value functions. Rather than learning a policy directly, these methods infer a policy indirectly by acting greedily with respect to the learned value estimates.
+
+In general, value functions can be used either for \emph{policy evaluation}, where the goal is to assess the quality of a fixed policy, or for \emph{control}, where the objective is to learn an optimal policy. This distinction becomes explicit in the algorithms discussed next.
+
+The central quantity in value-based control is the \textbf{action-value function}, or $Q$-function, defined for a policy $\pi$ as:
+\begin{equation}
+    Q^\pi(s, a) =
+    \mathbb{E}_\pi \left[
+    \sum_{k=0}^{\infty} \gamma^k r_{t+k+1}
+    \,\bigg|\, s_t = s, a_t = a
+    \right],
+\end{equation}
+which represents the expected return obtained by taking action $a$ in state $s$ and following policy $\pi$ thereafter. The optimal action-value function $Q^*(s,a)$ is defined as the maximum of this expectation over all admissible policies and induces an optimal policy by greedy action selection.
+
+\subsection{Q-Learning}
+
+While the formulation above applies to arbitrary policies, \emph{Q-Learning}~\cite{watkins1989learning} explicitly addresses the \emph{control} problem by directly estimating the optimal action-value function $Q^*(s,a)$. It is an \emph{off-policy} TD algorithm, meaning that it learns the value of the optimal policy independently of the policy used to generate behavior.
+
+At each time step, Q-Learning updates its estimate according to the Bellman optimality equation:
+\begin{equation}
+    \label{eq:q_learning_update}
+    Q(s_t, a_t) \gets Q(s_t, a_t)
+    + \alpha \left[
+        r_{t+1}
+        + \gamma \max_{a'} Q(s_{t+1}, a')
+        - Q(s_t, a_t)
+    \right],
+\end{equation}
+where $\alpha \in (0,1]$ is the learning rate and $\gamma \in [0,1)$ is the discount factor. The expression inside the brackets corresponds to the TD error.
+
+Because Q-Learning is off-policy, the behavior policy can be chosen to encourage exploration. In practice, an $\varepsilon$-greedy strategy is commonly adopted, in which a random action is selected with probability $\varepsilon \in [0,1]$, and the greedy action otherwise. Once learning converges, the optimal policy is obtained as:
+\begin{equation}
+    \pi^*(s) = \arg\max_a Q^*(s,a).
+\end{equation}
+
+Algorithm~\ref{alg:q_learning} summarizes the tabular Q-Learning procedure for finite state and action spaces.
+
+\begin{algorithm}
+\caption{Tabular Q-Learning}
+\label{alg:q_learning}
+\begin{algorithmic}
+\Require Learning rate $\alpha \in (0,1]$, exploration rate $\varepsilon \in [0,1]$, discount factor $\gamma \in [0,1)$
+\State Initialize $Q(s,a)$ arbitrarily for all $s \in \mathcal{S}$, $a \in \mathcal{A}(s)$
+\For{each episode}
+    \State Initialize $s$
+    \For{each time step}
+        \State Select $a_t$ using $\varepsilon$-greedy policy over $Q(s_t,\cdot)$
+        \State Execute $a_t$, observe $r_{t+1}, s_{t+1}$
+        \State Update $Q(s_t,a_t)$ using Eq.~\eqref{eq:q_learning_update}
+        \State $s_t \gets s_{t+1}$
+    \EndFor
+\EndFor
+\end{algorithmic}
+\end{algorithm}
+
+Although Q-Learning is guaranteed to converge under standard assumptions in tabular settings, its direct application becomes infeasible in large or continuous state spaces. This limitation motivated the use of function approximation, culminating in the development of Deep Q-Networks.
+
+\subsection{Deep Q-Networks}
+\label{sec:dqn}
+
+Early attempts to combine \gls{rl} with function approximation include TD-Gammon~\cite{tesauro1994td}, which employed a neural network to approximate the value function within the TD($\lambda$) framework. Building upon these foundational ideas, \cite{mnih2015human} introduced the \gls{dqn}, a scalable framework that successfully integrates deep neural networks with Q-Learning.
+
+DQN approximates the action-value function using a deep neural network parameterized by $\theta$ and introduces several key mechanisms to stabilize learning:
+
+\begin{itemize}
+    \item \textbf{Deep State Representation:}
+    High-dimensional observations, such as images, are processed using Convolutional Neural Networks (CNNs)~\cite{lecun2010convolutional}, allowing the agent to learn compact feature representations directly from raw sensory input.
+    
+    \item \textbf{Experience Replay:}
+    Transitions $(s,a,r,s')$ are stored in a replay buffer $\mathcal{D}$ and sampled uniformly during training. This breaks temporal correlations between samples and improves data efficiency.
+    
+    \item \textbf{Target Network:}
+    A separate target network with parameters $\theta^-$ is used to compute TD targets. The parameters $\theta^-$ are updated periodically, reducing training instabilities caused by rapidly changing targets.
+\end{itemize}
+
+The DQN update rule follows the Q-Learning principle:
+\begin{equation}
+    \label{eq:dqn_update}
+    Q(s_t, a_t; \theta) \leftarrow Q(s_t, a_t; \theta)
+    + \alpha \left[
+        r_{t+1}
+        + \gamma \max_{a'} Q(s_{t+1}, a'; \theta^-)
+        - Q(s_t, a_t; \theta)
+    \right].
+\end{equation}
+
+Equivalently, learning can be interpreted as minimizing the squared TD error through the loss function:
+\begin{equation}
+    \mathcal{L}(\theta) =
+    \mathbb{E}_{(s,a,r,s') \sim \mathcal{D}}
+    \left[
+        \left(
+        r + \gamma \max_{a'} Q(s',a';\theta^-)
+        - Q(s,a;\theta)
+        \right)^2
+    \right].
+\end{equation}
+
+Algorithm~\ref{alg:dqn} summarizes its training procedure.
+
+\begin{algorithm}
+\caption{Deep Q-Network}
+\label{alg:dqn}
+\begin{algorithmic}[1]
+\Require Initialize Q-network parameters $\theta$
+\Require Initialize target network parameters $\theta^- \leftarrow \theta$
+\Require Initialize replay buffer $\mathcal{D}$
+\For{each episode}
+    \State Initialize $s$
+    \For{each step}
+        \State Select $a_t$ using $\varepsilon$-greedy policy over $Q(s_t,\cdot;\theta)$
+        \State Execute $a_t$, observe $r_{t+1}, s_{t+1}$
+        \State Store $(s_t,a_t,r_{t+1},s_{t+1})$ in $\mathcal{D}$
+        \State Sample mini-batch from $\mathcal{D}$
+        \State Perform gradient descent on $\mathcal{L}(\theta)$
+        \State Every $C$ steps, update target network: $\theta^- \leftarrow \theta$
+        \State $s_t \gets s_{t+1}$
+    \EndFor
+\EndFor
+\end{algorithmic}
+\end{algorithm}

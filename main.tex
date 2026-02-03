@@ -96,6 +96,8 @@
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{listings}
+\usepackage{caption}
+\usepackage{subcaption}
 
 
 
@@ -130,7 +132,7 @@
 % -----------------------------------------------------------
 
 
-\usepackage{lscape} 
+\usepackage{pdflscape} 
 \usepackage{rotating} %rotates the figures, page
 \usepackage{tikz}
 \usepackage[section]{placeins}
@@ -138,7 +140,6 @@
 \usepackage{algorithm}
 \usepackage{algpseudocode}
 \usepackage{amsthm}
-
 
 
 % ----------------------------------------------------------
@@ -164,6 +165,7 @@
 \newcommand{\theoref}[1]{Theorem \ref{#1}}
 \newcommand{\algoref}[1]{Algorithm \ref{#1}}
 \newtheorem{theorem}{Theorem}
+\newtheorem{proposition}{Proposition}
 \newtheorem{remark}{Remark}
 \newtheorem{definition}{Definition}
 \newtheorem{corollary}{Corollary}
@@ -336,7 +338,7 @@
 % ----------------------------------------------------------
 % Referências bibliográficas
 % ----------------------------------------------------------
-%\bibliographystyle{abntexalfenglish} %caso seja em inglês, retire o comentário desta linha
+\bibliographystyle{abntexalfenglish} %caso seja em inglês, retire o comentário desta linha
 
 % \renewcommand{\bibname}{REFER\^ENCIAS}
 %\renewcommand{\bibname}{Bibliography}

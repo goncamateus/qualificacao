@@ -1,0 +1,32 @@
+\subsubsection{Multi-Objective HalfCheetah}
+
+The Multi-Objective HalfCheetah (MO-HalfCheetah) environment is a multi-objective extension of the original HalfCheetah task from the MuJoCo benchmark suite~\cite{todorov2012mujoco}. It is designed for continuous robotic control and is based on a two-dimensional articulated robot composed of nine rigid body segments connected by eight joints. The primary control objective is to apply torques to the robot’s joints in order to propel the agent forward (to the right) as efficiently and rapidly as possible. A visual representation of the environment is shown in \fref{fig:envs/mo_halfcheetah}.
+
+\begin{figure}[ht]
+    \centering
+    \caption{Multi-Objective HalfCheetah environment. The agent controls a planar articulated robot and must balance forward velocity and energy efficiency objectives.}
+    \includegraphics[width=.5\textwidth]{images/environments/halfcheetah.png}
+    \par\medskip\ABNTEXfontereduzida\selectfont\textbf{Source:} Author
+    \label{fig:envs/mo_halfcheetah}
+\end{figure}
+
+The MO-HalfCheetah environment is formally characterized by a continuous action space, a continuous observation space, and a vector-valued reward function that explicitly captures multiple, potentially conflicting objectives.
+
+\paragraph{Multi-Objective Reward Function.}
+In contrast to the single-objective formulation, MO-HalfCheetah defines a two-dimensional reward vector $\vec{r}_t \in \mathbb{R}^2$:
+\begin{enumerate}
+    \item \textbf{Forward velocity reward}, proportional to the agent’s forward displacement, with $R_{max}=800$ and $R_{min}=0$.
+    \item \textbf{Control cost}, a negative reward proportional to the squared magnitude of the applied torques, penalizing excessive energy expenditure, with $R_{max}=-200$ and $R_{min}=-800$.
+\end{enumerate}
+
+In the original \texttt{HalfCheetah-v5} environment, these objectives are combined through linear scalarization,
+\begin{equation}
+r_t = r_t^{\text{forward}} - 0.1 \cdot r_t^{\text{control}}.
+\end{equation}
+
+However, in the DyLam experiments, this scalarization is removed, and the objectives are treated independently to allow explicit exploration of the Pareto front.
+
+The MO-HalfCheetah environment does not define terminal conditions based on success or failure states. Episodes are truncated after a fixed horizon of 1000 time steps. In this work, we additionally consider this benchmark as a Learning-Dynamics-Oriented Setup using the distance traveled from the origin as a final performance indicator.
+
+The HalfCheetah task is instantiated using the \texttt{HalfCheetah-v2} version and is employed as one of several continuous-action benchmark problems commonly used to evaluate multi-objective reinforcement learning algorithms~\cite{pgmorl, alegre2023sample, felten2024multi}. 
+

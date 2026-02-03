@@ -1,0 +1,66 @@
+\subsection{Learning-Dynamics-Oriented Setups}
+\label{sec:traditional_setups}
+
+In contrast to the Pareto-oriented environments described previously, the following setups are employed to evaluate DyLam’s learning dynamics under constrained interaction budgets and limited data availability. Rather than emphasizing the explicit construction of Pareto fronts, these environments are designed to assess how effectively the proposed method prioritizes reward components during training and how rapidly it converges to task-relevant behaviors.
+
+To this end, we consider two environments with distinct characteristics: a discrete, symbolic domain (Taxi-v3) and a continuous, physics-based robotic task (VSS-v0). In both cases, the original reward functions are decomposed into multiple components to enable the application of DyLam and to facilitate a detailed analysis of reward prioritization throughout training.
+
+\subsubsection{Taxi-v3}
+
+Taxi-v3 is a classic discrete benchmark environment from the Gymnasium \textit{toy\_text} suite~\cite{towers2024gymnasium}. The task consists of a taxi navigating a grid-world to pick up a passenger at a designated location and safely deliver them to a target destination. The environment features sparse rewards, strict action constraints, and penalties for illegal actions, making it well suited for studying learning efficiency and credit assignment. A schematic representation of the environment is shown in \fref{fig:envs/taxi}.
+
+\begin{figure}[ht]
+    \centering
+    \caption{Taxi-v3 environment. The agent navigates a discrete grid to pick up and drop off a passenger while avoiding illegal actions.}
+    \includegraphics[width=.5\textwidth]{images/environments/taxi.png}
+    \par\medskip\ABNTEXfontereduzida\selectfont\textbf{Source:} Author
+    \label{fig:envs/taxi}
+\end{figure}
+
+To enable multi-objective learning, we decompose the original scalar reward into three distinct components:
+\begin{enumerate}
+    \item \textbf{Energy}: a negative reward associated with each movement action, encouraging shorter and more efficient trajectories.
+    \item \textbf{Passenger drop-off}: a positive reward granted upon successfully delivering the passenger to the correct destination.
+    \item \textbf{Illegal action}: a penalty applied when the agent attempts an invalid pickup or drop-off action.
+\end{enumerate}
+
+The reward bounds for this environment are defined as
+\[
+\vec{R}_{\max} = \{-20,\, 1,\, 0\}, \quad
+\vec{R}_{\min} = \{-200,\, 0,\,-10\}.
+\]
+
+The primary objective of the Taxi-v3 experiments is to analyze, in greater depth, the effect introduced in \fref{sec:chickenbanana}, namely the role of \textit{a priori} information about reward magnitudes in dynamic reward weighting. Specifically, we investigate how different configurations of the reward boundaries $(\vec{R}_{\min}, \vec{R}_{\max})$ influence DyLam’s learning behavior, stability, and convergence. By explicitly varying these bounds, we aim to demonstrate their impact on the prioritization of reward components and on the agent’s ability to efficiently learn the passenger delivery task.
+
+In this setting, performance is primarily assessed by the agent’s efficiency in completing the passenger drop-off task. This allows us to isolate how changes in reward normalization and scaling affect task completion without altering the environment dynamics.
+
+\subsubsection{VSS-v0}
+
+The VSS-v0 environment is a continuous, physics-based robotic control task inspired by Very Small Size Soccer (VSS) scenarios~\cite{rsoccer}. In this environment, an agent controls a mobile robot operating on a planar field, with the objective of interacting with a ball and scoring goals against an opponent. An overview of the simulated field and task structure is illustrated in \fref{fig:envs/vss}.
+
+\begin{figure}[ht]
+    \centering
+    \caption{VSS-v0 environment. A mobile robot interacts with a ball in a planar field, aiming to score goals while minimizing control effort.}
+    \includegraphics[width=.6\textwidth]{images/environments/vss.png}
+    \par\medskip\ABNTEXfontereduzida\selectfont\textbf{Source:} Author
+    \label{fig:envs/vss}
+\end{figure}
+
+To facilitate the application of DyLam, the reward function is decomposed into three components that reflect the hierarchical structure of the task:
+\begin{enumerate}
+    \item \textbf{Move to ball}: a shaping reward encouraging the agent to approach the ball.
+    \item \textbf{Ball to goal}: a reward associated with directing the ball toward the opponent’s goal and successfully scoring.
+    \item \textbf{Energy}: a penalty proportional to the magnitude of the control actions, discouraging inefficient or excessive motion.
+\end{enumerate}
+
+The reward bounds for this environment are defined as
+\[
+\vec{R}_{\max} = \{150, 40, -100\}, \quad
+\vec{R}_{\min} = \{0, 0, -300\}.
+\]
+
+The VSS-v0 environment serves as the \textit{motivating benchmark} for the development of DyLam. In preliminary experiments, this task revealed a strong sensitivity to manually selected reward weights, with small variations leading to significantly different behaviors and learning outcomes.
+
+The objective of the VSS-v0 experiments is therefore to demonstrate DyLam’s ability to automatically adapt reward prioritization in a setting where fixed weights are difficult to tune and task objectives are naturally hierarchical. By evaluating performance in terms of goal-scoring rate, we assess whether DyLam can robustly transition from intermediate behaviors (approaching the ball) to task-completion behaviors (scoring goals) without manual intervention in reward design.
+
+Together, Taxi-v3 and VSS-v0 provide complementary perspectives on DyLam’s learning dynamics: the former emphasizes sensitivity to reward scaling and normalization, while the latter highlights the necessity of adaptive weighting in complex robotic control tasks. These environments enable a focused evaluation of how dynamic reward weighting influences convergence speed, stability, and task-relevant performance.

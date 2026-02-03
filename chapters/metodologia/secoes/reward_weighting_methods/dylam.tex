@@ -5,45 +5,78 @@ Using the static weighting function, we proved that the Critic becomes a regress
 Using a dynamic weight adjustment method, we do the same for training the estimators, but we change the function that weights the $Q$-values. Now the vector $\lambda$ is a function of the actual performance of the agent in the environment:
 
 \begin{gather}
-\overline{R^i_t} = R^i_t + \tau_\lambda(R^i_{t-1} - R^i_t) \\
-\zeta_i(\overline{R^i_t}) = \frac{R^i_{\text{max}} - \overline{R^i_t}}{R^i_{\text{max}} - R^i_{\text{min}}} \\
+\overline{RB^i_e} = RB^i_e + \tau_\lambda(RB^i_{e-1} - RB^i_e) \\
+\zeta_i(\overline{RB^i_e}) = \frac{R^i_{\text{max}} - \overline{RB^i_e}}{R^i_{\text{max}} - R^i_{\text{min}}} \\
 w_i = e^{\zeta_i} - 1 \\
-\lambda_i(\overline{R^i_t}) = \frac{w_i + \epsilon}{\sum_{j=1}^n (w_j + \epsilon)}
+\lambda_i(\overline{RB^i_e}) = \frac{w_i + \epsilon}{\sum_{j=1}^n (w_j + \epsilon)}
 \label{eq:lambda_func_fixed}
 \end{gather}
 
 \noindent
-where $R^i_t$ denotes the accumulated return for the $i$-th reward component at time $t$, and $\overline{R^i_t}$ is its smoothed version using a soft update factor $\tau_\lambda$. The term $\zeta_i(\overline{R^i_t})$ represents the normalized inverse proficiency score, defined using a pair of bounds $R^i_{\text{min}}$ and $R^i_{\text{max}}$ that capture what we call the \textit{sufficient values}. The denominator includes a small constant $\epsilon$ to ensure numerical stability.
+where $RB^i_e$ denotes the accumulated return for the $i$-th reward component at episode $e$, and $\overline{R^i_e}$ is its smoothed version using a soft update factor $\tau_\lambda$. The term $\zeta_i(\overline{RB^i_e})$ represents the normalized inverse proficiency score, defined using a pair of bounds $R^i_{\text{min}}$ and $R^i_{\text{max}}$ that capture what we call the \textit{baseline and sufficient returns}. The denominator includes a small constant $\epsilon$ to ensure numerical stability.
 
 
 The main idea of the method is to reduce each weight $\lambda_i$ as the agent learns the associated skill, prioritizing on the harder ones after learning the easier ones. However, this must be done smoothly to prevent instabilities.
 Therefore, we use smooth updates similar to the $\tau$-updates presented in \gls{ddpg} \cite{ddpg}.
-The smooth $\lambda$ updates lead to a low variance of $\sum^N_i \lambda_i Q_i (s,a)$ for the same state-action pairs along with the training. We update our theorem in Theorem \ref{theo:dyl_pg_theo}.
+The smooth $\lambda$ updates lead to a low variance of $\sum^N_i \lambda_i Q_i (s,a)$ for the same state-action pairs along with the training. We propose an update of our theorem in Proposition \ref{theo:dyl_pg_theo}.
 % the Actor to receive approximated $Q$-values for the same state-action pairs along with the training.
 
-\begin{theorem}[Dynamic $\lambda$ Policy Gradient theorem]
+\begin{proposition}[Dynamic $\lambda$ Policy Gradient proposition]
 \label{theo:dyl_pg_theo}
     \begin{gather}
     \begin{split}
     \nabla_\theta J (\pi_\theta) &= \int_S p^\pi(s) \int_A \nabla_\theta \pi_\theta (a|s) Q_\pi (s,a) \ da \ ds\\
-    &= \int_S p^\pi (s) \int_A \nabla_\theta \pi_\theta(s) \sum^N_i{\lambda_i(\overline{R^i_t}) Q^\pi_i (s,a)} \ da \ ds\\
-    &\iff E \ggg 1 \text{ and } |\tau_\lambda(R^i_t - R^i_{t-1})| \approx 0,
+    &= \int_S p^\pi (s) \int_A \nabla_\theta \pi_\theta(s) \sum^N_i{\lambda_i(\overline{RB^i_e}) Q^\pi_i (s,a)} \ da \ ds\\
+    &\iff E \ggg 1 \text{ and } |\tau_\lambda(RB^i_e - RB^i_{e-1})| \approx 0,
     \end{split}
     \label{eq:dyl_pg_theo}
     \end{gather} 
 \noindent
 \text{where $E$ is the number of episodes to take the average sum.}
-\end{theorem}
+\end{proposition}
 
 \begin{proof}
-By the law of large numbers, as \(E \ggg 1\), the empirical average reward \(\overline{R^i_E}\) converges to the expected reward \(\mathbb{E}[R^i]\). Since \(\lambda_i(\cdot)\) is a continuous function, we have $\lambda_i(\overline{R^i_E}) \to \lambda_i(\mathbb{E}[R^i]) \equiv \lambda_i$. Thus, for large \(E\), the time-varying weights \(\lambda_i(\overline{R^i_E})\) can be treated as constants \(\lambda_i\), reducing the dynamic case to Theorem \ref{theo:ext_pg_theo}:
+By the law of large numbers, as \(E \ggg 1\), the empirical average reward \(\overline{RB^i_E}\) converges to the expected reward \(\mathbb{E}[R^i]\). Since \(\lambda_i(\cdot)\) is a continuous function, we have $\lambda_i(\overline{RB^i_E}) \to \lambda_i(\mathbb{E}[R^i]) \equiv \lambda_i$. Thus, for large \(E\), the time-varying weights \(\lambda_i(\overline{RB^i_E})\) can be treated as constants \(\lambda_i\), reducing the dynamic case to Theorem \ref{theo:ext_pg_theo}:
 
 \begin{gather} 
     \begin{split}
-    \nabla_\theta J (\pi_\theta) &= \int_S p^\pi (s) \int_A \nabla_\theta \pi_\theta(s) \sum^N_i{\lambda_i(\overline{R^i_t}) Q^\pi_i (s,a)} da \ ds\\
+    \nabla_\theta J (\pi_\theta) &= \int_S p^\pi (s) \int_A \nabla_\theta \pi_\theta(s) \sum^N_i{\lambda_i(\overline{R^i_e}) Q^\pi_i (s,a)} da \ ds\\
     &= \int_S p^\pi (s) \int_A \nabla_\theta \pi_\theta(s) \sum^N_i{\lambda_i Q^\pi_i (s,a)} \ da \ ds \\
     &= \int_S p^\pi(s) \int_A \nabla_\theta \pi_\theta (s) Q_\pi (s,a) \ da \ ds\\
     \end{split}
     \label{eq:proof_dyl_pg_theo}
     \end{gather}
 \end{proof}
+
+The formulation of DyLam highlights an often overlooked but critical aspect of multi-objective reinforcement learning: the need to estimate meaningful bounds for accumulated rewards. The parameters $R^i_{\min}$ and $R^i_{\max}$ play a central role in defining the agent’s notion of \emph{baseline} and \emph{sufficient} proficiency for each reward component. In environments where analytical bounds are unavailable, these quantities can be estimated empirically via short exploratory rollouts, curriculum-style warm-up phase. While imperfect, such estimates are sufficient to induce a stable prioritization mechanism, since DyLam relies only on relative rather than absolute reward scales.
+
+By dynamically reallocating attention toward poorly learned objectives while preserving a globally coherent policy gradient, DyLam induces an implicit curriculum within a single reinforcement learning process. This mechanism enables the agent to first acquire sub-skills that are readily discoverable during exploration and to progressively shift its focus toward sparser and more difficult objectives.
+
+In the following chapters, we show that this mechanism enables efficient exploration of the weight space and allows learning in environments where standard baselines fail. We now formalize the complete DyLam procedure in Algorithm~\ref{alg:dylam}.
+
+\begin{algorithm}[H]
+\caption{DyLam Actor--Critic}
+\label{alg:dylam}
+\begin{algorithmic}[1]
+\State Initialize actor parameters $\theta$, critic parameters $\phi_i$ for each objective $i$
+\State Initialize return buffers $RB^i \leftarrow 0$
+\State Initialize bounds $R^i_{\min}, R^i_{\max}$ for all $i$
+\State Initialize weights $\lambda_i = \frac{1}{n}$
+
+\For{each episode $e=1,2,\dots$}
+    \State Reset environment, observe $s_0$
+    \State Reset episode returns $RB^i_e \leftarrow 0$
+    \For{each step $t$}
+        \State Sample $a_t \sim \pi_\theta(\cdot|s_t)$
+        \State Execute $a_t$, observe $s_{t+1}$ and reward vector $r(s_t,a_t,s_{t+1})$
+        \State Update each critic $Q_i$ using TD-learning
+        \State Accumulate $RB^i_e \mathrel{+}= r_i(s_t,a_t,s_{t+1})$
+    \EndFor
+
+    \State Update smoothed returns $\overline{RB^i_e}$
+    \State Compute $\lambda_i(\overline{RB^i_e})$ using Eq.~\eqref{eq:lambda_func_fixed}
+    \State Update actor $\theta$ using weighted policy gradient
+\EndFor
+\end{algorithmic}
+\end{algorithm}
+
